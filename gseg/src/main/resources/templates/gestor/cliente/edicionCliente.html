@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/baseLayout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{cliente.gestion.titulo}"></title>
+</head>
+
+<body>
+
+    <div layout:fragment="contentpage">
+
+        <!-- Mensaje guardado correctamente -->
+		<div th:if="${domiciliacionGuardada}" class="alert alert-success alert-dismissible fade show" role="alert">
+			<span th:text="#{domiciliacion.gestion.guardado}"></span>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+
+        <!-- Formulario cliente -->
+        <div class="card margin-bottom-20 padding-bottom-20">
+        	<form method="post" action="#" th:action="@{/gseg/cliente/guardar}" th:object="${clienteForm}">
+        	    <input type="hidden" th:field="*{id}" id="idCliente" />
+                <div class="card-header color-white">
+                    <h5 th:if="${clienteForm.id} == 0" th:text="#{cliente.gestion.alta}"></h5>
+                    <h5 th:if="${clienteForm.id} != 0 and ${soloLectura}" th:text="#{cliente.gestion.vista}"></h5>
+                    <h5 th:if="${clienteForm.id} != 0 and !${soloLectura}" th:text="#{cliente.gestion.editar}"></h5>
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Datos personales -->
+                    <h6>
+                        <span th:text="#{literal.datos.personales}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosPersonales">
+							<i class="fa fa-minus"></i>
+						</button>
+                    </h6>
+                    <hr class="btn-success line-form">
+                    <div class="show margin-bottom-20" id="datosPersonales">
+	                    <div class="form-row">
+	                        <div class="form-group col-md-3" th:classappend="${#fields.hasErrors('nombre')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.nombre}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{nombre}" maxlength="128">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+	                        </div>
+	                        <div class=" form-group col-md-3" th:classappend="${#fields.hasErrors('ape1')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.ape1}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{ape1}" maxlength="128">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('ape1')}" th:errors="*{ape1}"></span>
+	                        </div>
+	                        <div class=" form-group col-md-3" th:classappend="${#fields.hasErrors('ape2')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.ape2}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{ape2}" maxlength="128">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('ape2')}" th:errors="*{ape2}"></span>
+	                        </div>
+	                        <div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.genero}"></label>
+	                        	<select class="form-control form-control-sm" th:field="*{genero}">
+	                        		<option th:value="-1" th:text="#{literal.seleccione}">
+	                        		<option th:each="genero : ${listaGenero}" th:value="${genero.value}" th:text="${genero.text}" />
+	                        	</select>
+	                        </div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3" th:classappend="${#fields.hasErrors('tipoDoc')} ? 'has-error'">
+	                        	<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.tipo.documento}"></label>
+	                        	<select id="documento" class="form-control form-control-sm" th:field="*{tipoDoc}">
+	                        		<option th:value="-1" th:text="#{literal.seleccione}">
+	                        		<option th:each="documento : ${listaTipoDocumento}" th:value="${documento.value}" th:text="${documento.text}" />
+	                        	</select>
+	                        	<span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('tipoDoc')}" th:errors="*{tipoDoc}"></span>
+	                        </div>
+	                        <div class=" form-group col-md-3" th:classappend="${#fields.hasErrors('identificador')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.identificador}"></label>
+	                            <input type="text" id="identificador" class="form-control form-control-sm persist-input" th:field="*{identificador}" maxlength="9" style="text-transform:uppercase;">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('identificador')}" th:errors="*{identificador}"></span>
+	                        </div>
+	                        <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.nacimiento}"></label>
+                                <input type="date" class="form-control form-control-sm" th:field="*{fechaNac}">
+                            </div>
+							<div class="form-group col-md-3">
+								<br>
+								<div class="custom-control custom-checkbox">
+								  <input type="checkbox" class="custom-control-input" id="defaultChecked2" th:field="*{activo}" th:title="#{literal.activo}" th:checked="*{activo}">
+								  <label class="custom-control-label col-form-label-sm" for="defaultChecked2" th:text="#{literal.activo}"></label>
+								</div>
+							</div>
+						</div>
+					</div>
+                    <!-- Datos Personales -->
+
+                    <!-- Datos contacto -->
+                    <h6>
+                        <span th:text="#{literal.datos.contacto}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datoscontacto">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </h6>
+                    <hr class="btn-success line-form">
+                    <div class="show margin-bottom-20" id="datoscontacto">
+                        <div class="form-row">
+                        	<div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.tipo.via}"></label>
+	                        	<select class="form-control form-control-sm" th:field="*{tipoVia}">
+	                        		<option th:value="-1" th:text="#{literal.seleccione}">
+	                        		<option th:each="via : ${listaVias}" th:value="${via.id}" th:text="${via.nombre}" />
+	                        	</select>
+	                        </div>
+                            <div class="form-group col-md-6">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.nombre.via}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{nombreVia}" maxlength="128">
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.numero}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{numero}" maxlength="4">
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.planta}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{planta}" maxlength="3">
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.puerta}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{puerta}" maxlength="1" style="text-transform:uppercase;">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.provincia}"></label>
+	                        	<select class="form-control form-control-sm" th:field="*{provincia}">
+	                        		<option th:value="-1" th:text="#{literal.seleccione}" />
+	                        		<option th:each="provincia : ${listaProvincias}" th:value="${provincia.id}" th:text="${provincia.nombre}" />
+	                        	</select>
+	                        </div>
+	                        <div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.municipio}"></label>
+	                        	<select class="form-control form-control-sm" th:field="*{municipio}" th:value="*{municipio}">
+	                        		<option th:fragment="listaMunicipios" th:each="municipio : ${listaMunicipios}" th:value="${municipio.id}" th:text="${municipio.nombre}" />
+	                        	</select>
+	                        </div>
+	                        <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.codigo.postal}"></label>
+                                <input type="text" id="cp" class="form-control form-control-sm" th:field="*{cp}" maxlength="5">
+                            </div>
+                        </div>
+                        <div class="form-row">
+							<div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.telefono}"></label>
+                                <input type="text" id="telefono" name="telefono" class="form-control form-control-sm" th:field="*{telefono}" maxlength="11">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.movil}"></label>
+                                <input type="text" id="movil" class="form-control form-control-sm" th:field="*{movil}" maxlength="11">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.email}"></label>
+                                <input type="email" class="form-control form-control-sm" th:field="*{email}" maxlength="254">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Datos contacto -->
+
+	                <!-- Listado de domiciliaciones -->
+	                <div th:insert="gestor/cliente/gestionDomiciliacion::gestionDomiciliacion"></div>
+
+					<!-- Botones -->
+                    <div class="card-footer color-white">
+		                <div class="form-row float-right">
+		                    <a class="btn btn-success margin-right-20" th:href="@{/gseg/cliente/gestion}" th:text="!${soloLectura} ? #{literal.cancelar} : #{literal.volver}"></a>
+		                	<button th:if="!${soloLectura}" class="btn btn-success" type="submit" th:text="#{literal.guardar}"></button>
+		                </div>
+	                </div>
+	                <!-- Botones -->
+
+				</div>
+            </form>
+
+        </div>
+        <!-- Formulario cliente -->
+
+    </div>
+
+    <th:block layout:fragment="script">
+	    <script type="text/javascript">
+	        $(document).ready(function() {
+
+	        	var soloLectura = [[${soloLectura}]];
+	        	var idCliente = document.getElementById("idCliente").value;	
+
+	        	/*Carga la lista de municipios dependiendo de la provincia elegida*/
+	        	$(function() {
+	        		if(idCliente === 0){
+	        			$("#municipio").load('/gseg/cliente/municipios', $("#provincia").serialize());
+	        		}
+	        		$('#provincia').on('change', function() {
+	        			$("#municipio").load('/gseg/cliente/municipios', $("#provincia").serialize());
+	        		});
+	        	});
+
+	        	// Mascaras para el formulario
+	        	$('#telefono').mask("999 999 999");
+	        	$('#movil').mask("999 999 999");
+	        	$('#cp').mask("99999");
+	        	$('#numero').mask("9999");
+	        	$('#planta').mask("999");
+	        	$('#puerta').mask("A");
+	        	$('#documento').change(function(){
+	        		$("#identificador").unmask("")
+	        		if ($('#documento option:selected').val() === 'N') {
+	        			$('#identificador').mask("99999999A");
+	        		} else if ($('#documento option:selected').val() === 'C') {
+	        			$('#identificador').mask("A9999999A");
+	        		} else if ($('#documento option:selected').val() === 'I') {
+	        			$('#identificador').mask("A9999999A");
+	        		}
+	        	});
+
+	        	// Mascaras para la tabla
+				function cuentaBancariaFormat(cuenta) {
+					return cuenta.slice(0, 4) + "&#09;"
+						+ cuenta.slice(4, 8) + "&#09;"
+						+ cuenta.slice(8, 12) + "&#09;"
+						+ cuenta.slice(12, 16) + "&#09;"
+						+ cuenta.slice(16, 20) + "&#09;" + (cuenta).slice(20);
+				}
+
+	        	// Cambia los atributos a solo lectura en caso de estar en la vista
+	        	if (soloLectura) {
+	        		var input = document.getElementsByTagName("input");
+	        		for ( var i = 0; i < input.length; i++) {
+	        			input[i].setAttribute("readonly","true");
+	        		}
+	        		var select = document.getElementsByTagName("select");
+	        		for ( var i = 0; i < select.length; i++) {
+	        			select[i].setAttribute("disabled","true");
+	        		}
+	        		document.getElementById("defaultChecked2").disabled = true;
+	        	}
+
+				//Modal para activar/desactivar domiciliación
+				$('#active-modal').on('show.bs.modal', function(event) {
+					var button = $(event.relatedTarget);
+					var data = button.data('id');
+					var activo = button.data('activo');
+
+					var modal = $(this);
+
+					var a = modal.find('.modal-body a')[0];
+					if (activo) {
+						modal.find('.modal-header h4').text('Desactivar domiciliación');
+						modal.find('.modal-body p').text('¿Está usted seguro de desactivar esta domiciliación?');
+						a.href = '/gseg/cliente/domiciliacion/desactivar/' + data;
+					} else {
+						modal.find('.modal-header h4').text('Activar domiciliación');
+						modal.find('.modal-body p').text('¿Está usted seguro de activar esta domiciliación?');
+						a.href = '/gseg/cliente/domiciliacion/activar/' + data;
+					}
+				});
+
+				var table = $('#tablaDomiciliacion').DataTable({
+					ajax: "/listaDomiciliaciones/" + idCliente,
+	                ajaxDataProp: "",
+	                language: {
+						"url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+	                },
+					columns: [
+	                { data: "id", visible: false },
+	                { data: "nombre" },
+	                { data: "ape1" },
+	                { data: "ape2" },
+	                { 
+	                	data: "numero",
+	                	render: function(data) {
+	                		return cuentaBancariaFormat(data);
+	                	}
+	                },
+	                {
+	                	data: null,
+	                    orderable: false,
+	                    searchable: false,
+	                    render: function(data, type, row, meta) {
+	                    	var idDomiciliacion = row['id'];
+	                        var activo = row['activo'];
+	                        var enlaces = '';
+	                        var enlaceVer = `<a class="text-success margin-right-10" title="[[#{literal.ver}]]" href="[[@{/gseg/cliente/domiciliacion/ver/${idDomiciliacion}}]]"><i class="fas fa-eye fa-sm"></i></a>`;
+	                        var enlaceEditar = `<a class="text-success margin-right-10" title="[[#{literal.editar}]]" href="[[@{/gseg/cliente/domiciliacion/editar/${idDomiciliacion}}]]"><i class="fas fa-edit fa-sm"></i></a>`;
+	                        var enlaceActivar = `<a class="text-success" href="#" title="[[#{literal.activar}]]" data-toggle="modal" data-target="#active-modal" data-id="${idDomiciliacion}" data-activo="${activo}"><i class="fas fa-user-plus fa-sm"></i></a>`;
+	                        var enlaceDesactivar = `<a class="text-success" href="#" title="[[#{literal.desactivar}]]" data-toggle="modal" data-target="#active-modal" data-id="${idDomiciliacion}" data-activo="${activo}"><i class="fas fa-user-minus fa-sm"></i></a>`;
+	                        if (row['activo'] === true) {
+	                        	enlaces = enlaceVer + enlaceEditar + enlaceDesactivar;
+	                        } else {
+	                        	enlaces = enlaceVer + enlaceEditar + enlaceActivar;
+	                        }
+	                        return enlaces;
+	                    }
+					}],
+	                // control al crear la fila, para colorear el fondo de la fila en rojo a las entidades no activas
+	                createdRow: function(row, data, index) {
+	                	if (index % 2 != 0 && data['activo'] === true) {
+	                		$(row).addClass('fila-impar');
+	                	}
+	                	if (data['activo'] === false) {
+	                		$(row).addClass('fila-anulada');
+	                	}
+					}
+
+				});
+
+	        });
+
+	    </script>
+
+    </th:block>
+
+</body>
+
+</html>

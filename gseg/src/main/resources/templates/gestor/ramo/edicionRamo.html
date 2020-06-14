@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/baseLayout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{ramo.gestion.titulo}"></title>
+</head>
+
+<body>
+
+    <div layout:fragment="contentpage">
+
+        <!-- Formulario ramo -->
+        <div class="card margin-bottom-20 padding-bottom-20">
+        	<form method="post" action="#" th:action="@{/gseg/ramo/guardar}" th:object="${ramoForm}">
+        	    <input type="hidden" th:field="*{id}" id="idRamo" />
+                <div class="card-header color-white">
+                    <h5 th:if="${ramoForm.id} == 0" th:text="#{ramo.gestion.alta}"></h5>
+                    <h5 th:if="${ramoForm.id} != 0 and ${soloLectura}" th:text="#{ramo.gestion.vista}"></h5>
+                    <h5 th:if="${ramoForm.id} != 0 and !${soloLectura}" th:text="#{ramo.gestion.editar}"></h5>
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Datos ramo -->
+                    <h6>
+                        <span th:text="#{literal.datos.ramo}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosRamo">
+							<i class="fa fa-minus"></i>
+						</button>
+                    </h6>
+                    <hr class="btn-success line-form">
+                    <div class="show" id="datosRamo">
+	                    <div class="form-row">
+	                        <div class="form-group col-md-3" th:classappend="${#fields.hasErrors('nombre')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.nombre}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{nombre}" maxlength="128">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+	                        </div>
+	                        <div class="form-group col-md-3">
+								<br>
+								<div class="custom-control custom-checkbox">
+								  <input type="checkbox" class="custom-control-input" id="defaultChecked2" th:field="*{activo}" th:title="#{literal.activo}" th:checked="*{activo}">
+								  <label class="custom-control-label col-form-label-sm" for="defaultChecked2" th:text="#{literal.activo}"></label>
+								</div>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class=" form-group col-md-12">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.descripcion}"></label>
+    							<textarea id="textArea" class="form-control form-control-sm persist-input" th:field="*{descripcion}" maxlength="128" rows="3"></textarea>
+	                        </div>
+						</div>
+					</div>
+                    <!-- Datos ramo -->
+
+	                <!-- Botones -->
+	                <div class="card-footer color-white">
+	                <div class="form-row float-right">
+	                    <a class="btn btn-success margin-right-20" th:href="@{/gseg/ramo/gestion}" th:text="!${soloLectura} ? #{literal.cancelar} : #{literal.volver}"></a>
+	                	<button th:if="!${soloLectura}" class="btn btn-success" type="submit" th:text="#{literal.guardar}"></button>
+	                </div>
+	                </div>
+	                <!-- Botones -->
+				</div>
+            </form>
+
+        </div>
+        <!-- Formulario ramo -->
+
+    </div>
+
+    <th:block layout:fragment="script">
+	    <script type="text/javascript">
+	        $(document).ready(function() {
+
+	        	var soloLectura = [[${soloLectura}]];
+
+	        	// Cambia los atributos a solo lectura en caso de estar en la vista
+	        	if (soloLectura) {
+	        		var input = document.getElementsByTagName("input");
+	        		for ( var i = 0; i < input.length; i++) {
+	        			input[i].setAttribute("readonly","true");
+	        		}
+	        		document.getElementById("defaultChecked2").disabled = true;
+	        		document.getElementById("textArea").disabled = true;
+	        	}
+
+	        });
+	    </script>
+
+    </th:block>
+
+</body>
+
+</html>

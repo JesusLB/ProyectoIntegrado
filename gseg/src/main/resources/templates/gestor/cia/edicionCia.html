@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/baseLayout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{cia.gestion.titulo}"></title>
+</head>
+
+<body>
+
+    <div layout:fragment="contentpage">
+
+    	<!-- Mensaje producto guardado correctamente -->
+		<div th:if="${productoGuardado}" class="alert alert-success alert-dismissible fade show" role="alert">
+			<span th:text="#{producto.gestion.guardado}"></span>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+
+		<!-- Mensaje departamento guardado correctamente -->
+		<div th:if="${departamentoGuardado}" class="alert alert-success alert-dismissible fade show" role="alert">
+			<span th:text="#{departamento.gestion.guardado}"></span>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+
+        <!-- Formulario compañía -->
+        <div class="card margin-bottom-20 padding-bottom-20">
+        	<form method="post" action="#" th:action="@{/gseg/cia/guardar}" th:object="${ciaForm}">
+        	    <input type="hidden" th:field="*{id}" id="idCia" />
+                <div class="card-header color-white">
+                    <h5 th:if="${ciaForm.id} == 0" th:text="#{cia.gestion.alta}"></h5>
+                    <h5 th:if="${ciaForm.id} != 0 and ${soloLectura}" th:text="#{cia.gestion.vista}"></h5>
+                    <h5 th:if="${ciaForm.id} != 0 and !${soloLectura}" th:text="#{cia.gestion.editar}"></h5>
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Datos compañia -->
+                    <h6>
+                        <span th:text="#{literal.datos.cia}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosCompañia">
+							<i class="fa fa-minus"></i>
+						</button>
+                    </h6>
+                    <hr class="btn-success line-form">
+                    <div class="show margin-bottom-20" id="datosCompañia">
+	                    <div class="form-row">
+	                        <div class="form-group col-md-3" th:classappend="${#fields.hasErrors('nombre')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.nombre}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{nombre}" maxlength="128">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+	                        </div>
+	                        <div class="form-group col-md-3" th:classappend="${#fields.hasErrors('tipoDoc')} ? 'has-error'">
+	                        	<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.tipo.documento}"></label>
+	                        	<select id="documento" class="form-control form-control-sm" th:field="*{tipoDoc}">
+	                        		<option th:value="-1" th:text="#{literal.seleccione}">
+	                        		<option th:each="documento : ${listaTipoDocumento}" th:value="${documento.value}" th:text="${documento.text}" />
+	                        	</select>
+	                        	<span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('tipoDoc')}" th:errors="*{tipoDoc}"></span>
+	                        </div>
+	                        <div class=" form-group col-md-3" th:classappend="${#fields.hasErrors('identificador')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.identificador}"></label>
+	                            <input type="text" id="identificador" class="form-control form-control-sm persist-input" th:field="*{identificador}" maxlength="9" style="text-transform:uppercase;">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('identificador')}" th:errors="*{identificador}"></span>
+	                        </div>
+	                        <div class="form-group col-md-3">
+								<br>
+								<div class="custom-control custom-checkbox">
+								  <input type="checkbox" class="custom-control-input" id="defaultChecked2" th:field="*{activo}" th:title="#{literal.activo}" th:checked="*{activo}">
+								  <label class="custom-control-label col-form-label-sm" for="defaultChecked2" th:text="#{literal.activo}"></label>
+								</div>
+							</div>
+						</div>
+                        <div class="form-row">
+                        	<div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.tipo.via}"></label>
+	                        	<select class="form-control form-control-sm" th:field="*{tipoVia}">
+	                        		<option th:value="-1" th:text="#{literal.seleccione}">
+	                        		<option th:each="via : ${listaVias}" th:value="${via.id}" th:text="${via.nombre}" />
+	                        	</select>
+	                        </div>
+                            <div class="form-group col-md-6">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.nombre.via}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{nombreVia}" maxlength="128">
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.numero}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{numero}" maxlength="4">
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.planta}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{planta}" maxlength="3">
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.puerta}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{puerta}" maxlength="1" style="text-transform:uppercase;">
+                            </div>
+                        </div>
+                         <div class="form-row">
+                            <div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.provincia}"></label>
+	                        	<select class="form-control form-control-sm" th:field="*{provincia}">
+	                        		<option th:value="-1" th:text="#{literal.seleccione}" />
+	                        		<option th:each="provincia : ${listaProvincias}" th:value="${provincia.id}" th:text="${provincia.nombre}" />
+	                        	</select>
+	                        </div>
+	                        <div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.municipio}"></label>
+	                        	<select class="form-control form-control-sm" th:field="*{municipio}" th:value="*{municipio}">
+	                        		<option th:fragment="listaMunicipios" th:each="municipio : ${listaMunicipios}" th:value="${municipio.id}" th:text="${municipio.nombre}" />
+	                        	</select>
+	                        </div>
+	                        <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.codigo.postal}"></label>
+                                <input type="text" id="cp" class="form-control form-control-sm" th:field="*{cp}" maxlength="5">
+                            </div>
+                        </div>
+                        <div class="form-row">
+							<div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.telefono}"></label>
+                                <input type="text" id="telefono" name="telefono" class="form-control form-control-sm" th:field="*{telefono}" maxlength="11">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.email}"></label>
+                                <input type="email" class="form-control form-control-sm" th:field="*{email}" maxlength="254">
+                            </div>
+                        </div>
+					</div>
+                    <!-- Datos compañía -->
+
+                    <!-- Listado de productos -->
+	                <div th:insert="gestor/producto/gestionProducto::gestionProducto"></div>
+
+	                <!-- Listado de departamentos -->
+	                <div th:insert="gestor/departamento/gestionDepartamento::gestionDepartamento"></div>
+
+	                <!-- Botones -->
+	                <div class="card-footer color-white">
+	                <div class="form-row float-right">
+	                    <a class="btn btn-success margin-right-20" th:href="@{/gseg/cia/gestion}" th:text="!${soloLectura} ? #{literal.cancelar} : #{literal.volver}"></a>
+	                	<button th:if="!${soloLectura}" class="btn btn-success" type="submit" th:text="#{literal.guardar}"></button>
+	                </div>
+	                </div>
+	                <!-- Botones -->
+				</div>
+            </form>
+
+        </div>
+        <!-- Formulario compañía -->
+
+    </div>
+
+    <th:block layout:fragment="script">
+	    <script type="text/javascript">
+		    $(document).ready(function() {
+	
+		   	 var soloLectura = [[${soloLectura}]];
+		   	 var idCia = document.getElementById("idCia").value;
+		   	        	
+		   	 /*Carga la lista de municipios dependiendo de la provincia elegida*/
+		   	 $(function() {
+		   		 if(idCia === 0){
+		   			 $("#municipio").load('/gseg/cia/municipios', $("#provincia").serialize());
+		   	     }
+		   	     $('#provincia').on('change', function() {	        			
+		   	    	 $("#municipio").load('/gseg/cia/municipios', $("#provincia").serialize());	        			
+		   	     });	        		
+		   	 });
+	
+		   	 //Modal para activar/desactivar producto
+		   	 $('#active-modal-producto').on('show.bs.modal', function(event) {
+		   	 	var button = $(event.relatedTarget);
+		   		var data = button.data('id');
+		   		var activo = button.data('activo');
+	
+		   		var modal = $(this);
+	
+		   		var a = modal.find('.modal-body a')[0];
+		   			if (activo) {						
+		   				modal.find('.modal-header h4').text('Desactivar producto');
+		   				modal.find('.modal-body p').text('¿Está usted seguro de desactivar este producto?');
+		   				a.href = '/gseg/cia/producto/desactivar/' + data;
+		   			} else {
+		   				modal.find('.modal-header h4').text('Activar producto');
+		   				modal.find('.modal-body p').text('¿Está usted seguro de activar este producto?');						
+		   				a.href = '/gseg/cia/producto/activar/' + data;
+		   			}
+		   		});
+		   				
+		   	 	//Modal para activar/desactivar departamento
+		   	 	$('#active-modal-departamento').on('show.bs.modal', function(event) {
+		   	 		var button = $(event.relatedTarget);
+		   			var data = button.data('id');
+		   			var activo = button.data('activo');
+	
+		   			var modal = $(this);
+	
+		   			var a = modal.find('.modal-body a')[0];
+		   			if (activo) {						
+		   				modal.find('.modal-header h4').text('Desactivar departamento');
+		   				modal.find('.modal-body p').text('¿Está usted seguro de desactivar este departamento?');
+		   				a.href = '/gseg/cia/departamento/desactivar/' + data;
+		   			} else {
+		   				modal.find('.modal-header h4').text('Activar departamento');
+		   				modal.find('.modal-body p').text('¿Está usted seguro de activar este departamento?');						
+		   				a.href = '/gseg/cia/departamento/activar/' + data;
+		   			}
+		   		});
+		   	        	
+		           // Mascaras para el formulario
+		           $('#telefono').mask("999 999 999");
+		           $('#cp').mask("99999");
+		           $('#numero').mask("9999");
+		           $('#planta').mask("999");
+		           $('#puerta').mask("A");
+		           $('#documento').change(function(){
+		          	$("#identificador").unmask("")
+		           	if ($('#documento option:selected').val() === 'N') {	        			
+		           		$('#identificador').mask("99999999A");
+		           	} else if ($('#documento option:selected').val() === 'C') {	        			
+		           		$('#identificador').mask("A9999999A");
+		           	} else if ($('#documento option:selected').val() === 'I') {
+		           		$('#identificador').mask("A9999999A");
+		           	}
+		           });
+		   	        	
+		           // Cambia los atributos a solo lectura en caso de estar en la vista
+		           if (soloLectura) {
+		           	var input = document.getElementsByTagName("input");
+		           	for ( var i = 0; i < input.length; i++) {
+		           		input[i].setAttribute("readonly","true");
+		           	}
+		           	var select = document.getElementsByTagName("select");
+		           	for ( var i = 0; i < select.length; i++) {
+		           		select[i].setAttribute("disabled","true");
+		           	}		
+		           	document.getElementById("defaultChecked2").disabled = true;
+		           }
+		   	        	
+		           var table = $('#tablaProducto').DataTable({
+		   			ajax: "/listaProductos/" + idCia,
+		               ajaxDataProp: "",	                
+		               language: {
+		   			"url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+		               },
+		   			columns: [
+		   				{ data: "id", visible: false },	                
+		   				{ data: "nombre" },
+		   				{ data: "descripcion" },	                
+		                   {                    		
+		                   	data: null,
+		                       orderable: false,
+		                       searchable: false,
+		                       render: function(data, type, row, meta) {
+		                       	var idProducto = row['id'];
+		                           var activo = row['activo'];
+		                           var enlaces = '';
+		                           var enlaceVer = `<a class="text-success margin-right-10" title="[[#{literal.ver}]]" href="[[@{/gseg/cia/producto/ver/${idProducto}}]]"><i class="fas fa-eye fa-sm"></i></a>`;
+		                           var enlaceEditar = `<a class="text-success margin-right-10" title="[[#{literal.editar}]]" href="[[@{/gseg/cia/producto/editar/${idProducto}}]]"><i class="fas fa-edit fa-sm"></i></a>`;
+		                           var enlaceActivar = `<a class="text-success" href="#" title="[[#{literal.activar}]]" data-toggle="modal" data-target="#active-modal-producto" data-id="${idProducto}" data-activo="${activo}"><i class="fas fa-user-plus fa-sm"></i></a>`;
+		                           var enlaceDesactivar = `<a class="text-success" href="#" title="[[#{literal.desactivar}]]" data-toggle="modal" data-target="#active-modal-producto" data-id="${idProducto}" data-activo="${activo}"><i class="fas fa-user-minus fa-sm"></i></a>`;
+		                           if (row['activo'] === true) {
+		                           	enlaces = enlaceVer + enlaceEditar + enlaceDesactivar;
+		                           } else {
+		                           	enlaces = enlaceVer + enlaceEditar + enlaceActivar;
+		                           }
+		                           return enlaces;
+		                       }	
+		   			}],
+		               // control al crear la fila, para colorear el fondo de la fila en rojo a las entidades no activas		             	
+		               createdRow: function(row, data, index) {
+		               	if (index % 2 != 0 && data['activo'] === true) {
+		                  		$(row).addClass('fila-impar');
+		                  	}
+		                  	if (data['activo'] === false) {
+		                  		$(row).addClass('fila-anulada');
+		                  	}
+		               }
+		   		});
+		   	        		        	
+		          	var table = $('#tablaDepartamento').DataTable({
+		   			ajax: "/listaDepartamentos/" + idCia,
+		               ajaxDataProp: "",	                
+		               language: {
+		               	"url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+		               },
+		   			columns: [
+		   				{ data: "id", visible: false },	                
+		                   { data: "nombre" },
+		                   { data: "telefono" },
+		                   { data: "descripcion" },	                
+		                   {                    		
+		                   	data: null,
+		                       orderable: false,
+		                       searchable: false,
+		                       render: function(data, type, row, meta) {
+		                       	var idDepartamento = row['id'];
+		                           var activo = row['activo'];
+		                           var enlaces = '';
+		                           var enlaceVer = `<a class="text-success margin-right-10" title="[[#{literal.ver}]]" href="[[@{/gseg/cia/departamento/ver/${idDepartamento}}]]"><i class="fas fa-eye fa-sm"></i></a>`;
+		                           var enlaceEditar = `<a class="text-success margin-right-10" title="[[#{literal.editar}]]" href="[[@{/gseg/cia/departamento/editar/${idDepartamento}}]]"><i class="fas fa-edit fa-sm"></i></a>`;
+		                           var enlaceActivar = `<a class="text-success" title="[[#{literal.activar}]]" data-toggle="modal" data-target="#active-modal-departamento" data-id="${idDepartamento}" data-activo="${activo}"><i class="fas fa-user-plus fa-sm"></i></a>`;
+		                           var enlaceDesactivar = `<a class="text-success" title="[[#{literal.desactivar}]]" data-toggle="modal" data-target="#active-modal-departamento" data-id="${idDepartamento}" data-activo="${activo}"><i class="fas fa-user-minus fa-sm"></i></a>`;
+		                           if (row['activo'] === true) {
+		                           	enlaces = enlaceVer + enlaceEditar + enlaceDesactivar;
+		                           } else {
+		                           	enlaces = enlaceVer + enlaceEditar + enlaceActivar;
+		                           }
+		                           return enlaces;
+		                       }	
+		   			}],
+		               // control al crear la fila, para colorear el fondo de la fila en rojo a las entidades no activas		             	
+		   	        createdRow: function(row, data, index) {
+		                  	if (index % 2 != 0 && data['activo'] === true) {
+		                  		$(row).addClass('fila-impar');
+		                  	}
+		                  	if (data['activo'] === false) {
+		                  		$(row).addClass('fila-anulada');
+		                  	}
+		   			}
+		   		});
+		   	
+		   });	      
+	    </script>
+    
+    </th:block>
+
+</body>
+
+</html>

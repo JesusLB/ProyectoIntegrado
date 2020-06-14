@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/baseLayout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{domiciliacion.gestion.titulo}"></title>
+</head>
+
+<body>
+
+    <div layout:fragment="contentpage">
+
+        <!-- Formulario domiciliacion -->
+        <div class="card margin-bottom-20 padding-bottom-20">
+        	<form method="post" action="#" th:action="@{/gseg/cliente/domiciliacion/guardar}" th:object="${domicForm}">
+        	    <input type="hidden" th:field="*{id}" id="idDomiciliacion" />
+        	    <input type="hidden" th:field="*{cliente}" id="cliente" />
+                <div class="card-header color-white">
+                    <h5 th:if="${domicForm.id} == 0" th:text="#{domiciliacion.gestion.alta}"></h5>
+                    <h5 th:if="${domicForm.id} != 0 and ${soloLectura}" th:text="#{domiciliacion.gestion.vista}"></h5>
+                    <h5 th:if="${domicForm.id} != 0 and !${soloLectura}" th:text="#{domiciliacion.gestion.editar}"></h5>
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Datos personales -->
+                    <h6>
+                        <span th:text="#{literal.datos.personales}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosPersonales">
+							<i class="fa fa-minus"></i>
+						</button>
+                    </h6>
+                    <hr class="btn-primary line-form">
+                    <div class="show" id="datosPersonales">
+	                    <div class="form-row">
+	                        <div class="form-group col-md-3" th:classappend="${#fields.hasErrors('nombre')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.nombre}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{nombre}" maxlength="128">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+	                        </div>
+	                        <div class=" form-group col-md-3" th:classappend="${#fields.hasErrors('ape1')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.ape1}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{ape1}" maxlength="128">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('ape1')}" th:errors="*{ape1}"></span>
+	                        </div>
+	                        <div class=" form-group col-md-3" th:classappend="${#fields.hasErrors('ape2')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.ape2}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{ape2}" maxlength="128">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('ape2')}" th:errors="*{ape2}"></span>
+	                        </div>
+	                        <div class="form-group col-md-3">
+								<br>
+								<div class="custom-control custom-checkbox">
+								  <input type="checkbox" class="custom-control-input" id="defaultChecked2" th:field="*{activo}" th:title="#{literal.activo}" th:checked="*{activo}">
+								  <label class="custom-control-label col-form-label-sm" for="defaultChecked2" th:text="#{literal.activo}"></label>
+								</div>
+							</div>
+						</div>
+					</div>
+                    <!-- Datos Personales -->
+
+                    <!-- Número de cuenta -->
+                    <h6>
+                        <span th:text="#{literal.datos.cuenta}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datoscuenta">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </h6>
+                    <hr class="btn-primary line-form">
+                    <div class="show" id="datoscuenta">
+                        <div class="form-row">
+	                        <div class=" form-group col-md-3" th:classappend="${#fields.hasErrors('numero')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.numero}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{numero}" maxlength="29">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('numero')}" th:errors="*{numero}"></span>
+	                        </div>
+                        </div>
+                    </div>
+                    <!-- Número de cuenta -->
+
+	                <!-- Botones -->
+	                <div class="card-footer color-white">
+	                <div class="form-row float-right">
+	                    <a class="btn btn-success margin-right-20" th:href="@{'/gseg/cliente/editar/' + *{cliente.id}}" th:text="!${soloLectura} ? #{literal.cancelar} : #{literal.volver}"></a>
+	                	<button th:if="!${soloLectura}" class="btn btn-success" type="submit" th:text="#{literal.guardar}"></button>
+	                </div>
+	                </div>
+	                <!-- Botones -->
+				</div>
+            </form>
+
+        </div>
+        <!-- Formulario domiciliacion -->
+
+    </div>
+
+    <th:block layout:fragment="script">
+	    <script type="text/javascript">
+	        $(document).ready(function() {
+
+	        	var soloLectura = [[${soloLectura}]];
+
+	        	// Mascaras para el formulario
+	        	$('#numero').mask("aa99 9999 9999 9999 9999 9999");
+
+	        	// Cambia los atributos a solo lectura en caso de estar en la vista
+	        	if (soloLectura) {
+	        		var input = document.getElementsByTagName("input");
+	        		for ( var i = 0; i < input.length; i++) {
+	        			input[i].setAttribute("readonly","true");
+	        		}
+	        		var select = document.getElementsByTagName("select");
+	        		for ( var i = 0; i < select.length; i++) {
+	        			select[i].setAttribute("disabled","true");
+	        		}
+	        		document.getElementById("defaultChecked2").disabled = true;
+	        	}
+
+	        });
+	    </script>
+
+    </th:block>
+
+</body>
+
+</html>

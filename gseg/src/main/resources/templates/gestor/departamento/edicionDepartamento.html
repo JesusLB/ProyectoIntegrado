@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/baseLayout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{departamento.gestion.titulo}"></title>
+</head>
+
+<body>
+
+    <div layout:fragment="contentpage">
+
+        <!-- Mensaje contacto guardado correctamente -->
+		<div th:if="${contactoGuardado}" class="alert alert-success alert-dismissible fade show" role="alert">
+			<span th:text="#{contacto.departamento.gestion.guardado}"></span>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+
+        <!-- Mensaje contacto eliminado correctamente -->
+		<div th:if="${contactoEliminado}" class="alert alert-success alert-dismissible fade show" role="alert">
+			<span th:text="#{contacto.departamento.gestion.eliminado}"></span>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+
+        <!-- Formulario departamento -->
+        <div class="card margin-bottom-20 padding-bottom-20">
+        	<form method="post" action="#" th:action="@{/gseg/cia/departamento/guardar}" th:object="${departamentoForm}">
+        	    <input type="hidden" th:field="*{id}" id="idDepartamento" />
+        	    <input type="hidden" th:field="*{cia}" id="cia" />
+                <div class="card-header color-white">
+                    <h5 th:if="${departamentoForm.id} == 0" th:text="#{departamento.gestion.alta}"></h5>
+                    <h5 th:if="${departamentoForm.id} != 0 and ${soloLectura}" th:text="#{departamento.gestion.vista}"></h5>
+                    <h5 th:if="${departamentoForm.id} != 0 and !${soloLectura}" th:text="#{departamento.gestion.editar}"></h5>
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Datos departamento -->
+                    <h6>
+                        <span th:text="#{literal.datos.departamento}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosDepartamento">
+							<i class="fa fa-minus"></i>
+						</button>
+                    </h6>
+                    <hr class="btn-success line-form">
+                    <div class="show margin-bottom-20" id="datosDepartamento">
+	                    <div class="form-row">
+	                        <div class="form-group col-md-3" th:classappend="${#fields.hasErrors('nombre')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.nombre}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{nombre}" maxlength="128">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+	                        </div>
+	                        <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.telefono}"></label>
+                                <input type="text" id="telefono" name="telefono" class="form-control form-control-sm" th:field="*{telefono}" maxlength="11">
+                            </div>
+	                        <div class="form-group col-md-3">
+								<br>
+								<div class="custom-control custom-checkbox">
+								  <input type="checkbox" class="custom-control-input" id="defaultChecked2" th:field="*{activo}" th:title="#{literal.activo}" th:checked="*{activo}">
+								  <label class="custom-control-label col-form-label-sm" for="defaultChecked2" th:text="#{literal.activo}"></label>
+								</div>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class=" form-group col-md-12">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.descripcion}"></label>
+    							<textarea id="textArea" class="form-control form-control-sm persist-input" th:field="*{descripcion}" maxlength="500" rows="3"></textarea>
+	                        </div>
+						</div>
+					</div>
+                    <!-- Datos departamento -->
+
+                    <!-- Listado de contactos de departamento -->
+	                <div th:insert="gestor/departamento/gestionContactoDepartamento::gestionContactoDepartamento"></div>
+
+	                <!-- Botones -->
+	                <div class="card-footer color-white">
+	                <div class="form-row float-right">
+	                    <a class="btn btn-success margin-right-20" th:href="@{'/gseg/cia/editar/' + *{cia.id}}" th:text="!${soloLectura} ? #{literal.cancelar} : #{literal.volver}"></a>
+	                	<button th:if="!${soloLectura}" class="btn btn-success" type="submit" th:text="#{literal.guardar}"></button>
+	                </div>
+	                </div>
+	                <!-- Botones -->
+				</div>
+            </form>
+
+        </div>
+        <!-- Formulario domiciliacion -->
+
+    </div>
+
+    <th:block layout:fragment="script">
+	    <script type="text/javascript">
+	        $(document).ready(function() {
+
+	        	var soloLectura = [[${soloLectura}]];
+	        	var idDepartamento = document.getElementById("idDepartamento").value;
+
+	        	// Mascaras para el formulario
+	        	$('#telefono').mask("999 999 999");
+
+	        	// Cambia los atributos a solo lectura en caso de estar en la vista
+	        	if (soloLectura) {
+	        		var input = document.getElementsByTagName("input");
+	        		for ( var i = 0; i < input.length; i++) {
+	        			input[i].setAttribute("readonly","true");
+	        		}
+	        		var select = document.getElementsByTagName("select");
+	        		for ( var i = 0; i < select.length; i++) {
+	        			select[i].setAttribute("disabled","true");
+	        		}
+	        		document.getElementById("defaultChecked2").disabled = true;
+	        		document.getElementById("textArea").disabled = true;
+	        	}
+
+				//Modal para eliminar un contacto
+				$('#delete-modal').on('show.bs.modal', function(event) {
+					var button = $(event.relatedTarget);
+					var data = button.data('id');
+
+					var modal = $(this);
+
+					var a = modal.find('.modal-body a')[0];
+					modal.find('.modal-header h4').text('Eliminar contacto de departamento');
+					modal.find('.modal-body p').text('¿Está usted seguro de eliminar este contacto?');
+					a.href = '/gseg/cia/departamento/contacto/eliminar/' + data;
+
+				});
+
+				 var table = $('#tablaContactoDepartamento').DataTable({
+	                    ajax: "/listaContactoDepartamento/" + idDepartamento,
+	                    ajaxDataProp: "",
+	                    language: {
+	                        "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+	                    },
+	                    columns: [
+	                    	{ data: "id", visible: false },
+	                    	{ data: "nombre" },
+	                    	{ data: "ape1" },
+	                    	{ data: "ape2" },
+	                    	{ data: "telefono" },
+	                    	{ data: "email" },
+	                    	{
+	                        	data: null,
+	                        	orderable: false,
+	                        	searchable: false,
+	                        	render: function(data, type, row, meta) {
+	                            	var idContacto = row['id'];
+	                            	var enlaces = '';
+	                            	var enlaceVer = `<a class="text-success margin-right-10" title="[[#{literal.ver}]]" href="[[@{/gseg/cia/departamento/contacto/ver/${idContacto}}]]"><i class="fas fa-eye fa-sm"></i></a>`;
+	                            	var enlaceEditar = `<a class="text-success margin-right-10" title="[[#{literal.editar}]]" href="[[@{/gseg/cia/departamento/contacto/editar/${idContacto}}]]"><i class="fas fa-edit fa-sm"></i></a>`;
+	                            	var enlaceEliminar = `<a class="text-success" href="#" title="[[#{literal.eliminar}]]" data-toggle="modal" data-target="#delete-modal" data-id="${idContacto}"><i class="fas fa-trash-alt fa-sm"></i></a>`;
+
+	                            	return enlaceVer + enlaceEditar + enlaceEliminar;
+	                        	}
+	                    }]
+
+	                });
+
+	        });
+	    </script>
+
+    </th:block>
+
+</body>
+
+</html>

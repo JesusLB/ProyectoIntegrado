@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/baseLayout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{peritacion.gestion.titulo}"></title>
+</head>
+
+<body>
+
+    <div layout:fragment="contentpage">
+
+    	<!-- Mensaje peritación guardada correctamente -->
+		<div th:if="${peritacionGuardada}" class="alert alert-success alert-dismissible fade show" role="alert">
+			<span th:text="#{peritacion.gestion.guardado}"></span>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+
+        <!-- Formulario peritacion -->
+        <div class="card margin-bottom-20 padding-bottom-20">
+        	<form method="post" action="#" th:action="@{/gseg/siniestro/peritacion/guardar}" th:object="${peritacionForm}">
+        	    <input type="hidden" th:field="*{id}" id="idPeritacion" />
+        	    <input type="hidden" th:field="*{siniestro.id}" id="idSiniestro" />
+                <div class="card-header color-white">
+                    <h5 th:if="${peritacionForm.id} == 0" th:text="#{peritacion.gestion.alta}"></h5>
+                    <h5 th:if="${peritacionForm.id} != 0 and ${soloLectura}" th:text="#{peritacion.gestion.vista}"></h5>
+                    <h5 th:if="${peritacionForm.id} != 0 and !${soloLectura}" th:text="#{peritacion.gestion.editar}"></h5>
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Datos peritacion -->
+                    <h6>
+                        <span th:text="#{literal.datos.peritacion}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosPeritacion">
+							<i class="fa fa-minus"></i>
+						</button>
+                    </h6>
+                    <hr class="btn-success line-form">
+                    <div class="show" id="datosPeritacion">
+	                    <div class="form-row">
+							<div class="form-group col-md-3 obligatorio" th:classappend="${#fields.hasErrors('fecha')} ? 'has-error'">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.peritacion}"></label>
+                                <input type="date" class="form-control form-control-sm" th:field="*{fecha}">
+                                <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}"></span>
+                            </div>
+						</div>
+						<div class="form-row">
+							<div class=" form-group col-md-12">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.descripcion}"></label>
+    							<textarea id="textArea" class="form-control form-control-sm persist-input" th:field="*{descripcion}" maxlength="500" rows="3"></textarea>
+	                        </div>
+						</div>
+					</div>
+                    <!-- Datos peritacion -->
+
+                    <!-- Datos perito -->
+                    <h6>
+                        <span th:text="#{literal.perito}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosPerito">
+							<i class="fa fa-minus"></i>
+						</button>
+                    </h6>
+                    <hr class="btn-success line-form">
+
+                    <!-- Si es alta mostramos mensaje -->
+					<div th:if="${peritacionForm.id} == 0" class="alert alert-info" role="alert">
+						<div class="row">
+							<div class="col-md-1">
+								<i class="fas fa-info-circle fa-2x"></i>
+							</div>
+							<div class="col-md-11">
+								<label th:text="#{peritacion.gestion.editar.perito}"></label>
+							</div>
+						</div>
+					</div>
+
+                    <div th:if="*{id} != 0">
+	                    <a th:if="!${soloLectura}" class="btn btn-success text-white margin-bottom-20" type="button" data-toggle="modal" data-target="#select-modal-perito" th:text="#{peritacion.gestion.nuevo.perito}"></a>
+	                    <div class="show" id="datosPerito">
+		                    <div class="form-row">
+								<div class="form-group col-md-2">
+	                                <label class="col-form-label col-form-label-sm" th:text="#{literal.nombre}"></label>
+	                                <input type="text" class="form-control form-control-sm" th:field="*{perito.nombre}" readonly>
+	                            </div>
+	                            <div class=" form-group col-md-2">
+									<label class="col-form-label col-form-label-sm" th:text="#{literal.ape1}"></label>
+	    							<input type="text" class="form-control form-control-sm" th:field="*{perito.ape1}" readonly>
+		                        </div>
+		                        <div class=" form-group col-md-2">
+									<label class="col-form-label col-form-label-sm" th:text="#{literal.ape2}"></label>
+	    							<input type="text" class="form-control form-control-sm" th:field="*{perito.ape2}" readonly>
+		                        </div>
+		                        <div class=" form-group col-md-2">
+									<label class="col-form-label col-form-label-sm" th:text="#{literal.telefono}"></label>
+	    							<input type="text" class="form-control form-control-sm" th:field="*{perito.telefono}" readonly>
+		                        </div>
+		                        <div class=" form-group col-md-2">
+									<label class="col-form-label col-form-label-sm" th:text="#{literal.movil}"></label>
+	    							<input type="text" class="form-control form-control-sm" th:field="*{perito.movil}" readonly>
+		                        </div>
+		                        <div class=" form-group col-md-2">
+									<label class="col-form-label col-form-label-sm" th:text="#{literal.email}"></label>
+	    							<input type="text" class="form-control form-control-sm" th:field="*{perito.email}" readonly>
+		                        </div>
+							</div>
+							<div class="form-row">
+	                        	<div class="form-group col-md-2">
+		                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.tipo.via}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{perito.tipoVia}" disabled>
+		                        		<option th:each="via : ${listaVias}" th:value="${perito.via.id}" th:text="${perito.via.nombre}" />
+		                        	</select>
+		                        </div>
+	                            <div class="form-group col-md-2">
+	                                <label class="col-form-label col-form-label-sm" th:text="#{literal.numero}"></label>
+	                                <input type="text" class="form-control form-control-sm" th:field="*{perito.numero}" readonly>
+	                            </div>
+	                            <div class="form-group col-md-1">
+	                                <label class="col-form-label col-form-label-sm" th:text="#{literal.planta}"></label>
+	                                <input type="text" class="form-control form-control-sm" th:field="*{perito.planta}" readonly>
+	                            </div>
+	                            <div class="form-group col-md-1">
+	                                <label class="col-form-label col-form-label-sm" th:text="#{literal.puerta}"></label>
+	                                <input type="text" class="form-control form-control-sm" th:field="*{perito.puerta}" readonly>
+	                            </div>
+	                            <div class="form-group col-md-2">
+	                                <label class="col-form-label col-form-label-sm" th:text="#{literal.codigo.postal}"></label>
+	                                <input type="text" class="form-control form-control-sm" th:field="*{perito.cp}" readonly>
+	                            </div>
+	                            <div class="form-group col-md-2">
+		                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.provincia}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{perito.provincia}" disabled>
+		                        		<option th:each="provincia : ${listaProvincias}" th:value="${perito.provincia.id}" th:text="${perito.provincia.nombre}" />
+		                        	</select>
+		                        </div>
+			                     <div class="form-group col-md-2">
+		                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.municipio}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{perito.municipio}" disabled>
+		                        		<option th:fragment="listaMunicipios" th:each="municipio : ${listaMunicipios}" th:value="${municipio.id}" th:text="${municipio.nombre}" />
+		                        	</select>
+		                        </div>
+							</div>
+						</div>
+					</div>
+                    <!-- Datos perito -->
+
+                    <!-- Datos taller -->
+                    <h6>
+                        <span th:text="#{literal.taller}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosTaller">
+							<i class="fa fa-minus"></i>
+						</button>
+                    </h6>
+                    <hr class="btn-success line-form">
+
+                    <!-- Si es alta mostramos mensaje -->
+					<div th:if="${peritacionForm.id} == 0" class="alert alert-info" role="alert">
+						<div class="row">
+							<div class="col-md-1">
+								<i class="fas fa-info-circle fa-2x"></i>
+							</div>
+							<div class="col-md-11">
+								<label th:text="#{peritacion.gestion.editar.taller}"></label>
+							</div>
+						</div>
+					</div>
+
+                    <div th:if="*{id} != 0">
+	                    <a th:if="!${soloLectura}" class="btn btn-success text-white margin-bottom-20" type="button" data-toggle="modal" data-target="#select-modal-taller" th:text="#{peritacion.gestion.nuevo.taller}"></a>
+	                    <div class="show" id="datosTaller">
+		                    <div class="form-row">
+								<div class="form-group col-md-2">
+	                                <label class="col-form-label col-form-label-sm" th:text="#{literal.nombre}"></label>
+	                                <input type="text" class="form-control form-control-sm" th:field="*{taller.nombre}" readonly>
+	                            </div>
+	                            <div class=" form-group col-md-2">
+									<label class="col-form-label col-form-label-sm" th:text="#{literal.tipo.documento}"></label>
+	    							<input type="text" class="form-control form-control-sm" th:field="*{taller.tipoDoc}" readonly>
+		                        </div>
+		                        <div class=" form-group col-md-2">
+									<label class="col-form-label col-form-label-sm" th:text="#{literal.identificador}"></label>
+	    							<input type="text" class="form-control form-control-sm" th:field="*{taller.identificador}" readonly>
+		                        </div>
+		                        <div class=" form-group col-md-2">
+									<label class="col-form-label col-form-label-sm" th:text="#{literal.telefono}"></label>
+	    							<input type="text" class="form-control form-control-sm" th:field="*{taller.telefono}" readonly>
+		                        </div>
+		                        <div class=" form-group col-md-2">
+									<label class="col-form-label col-form-label-sm" th:text="#{literal.movil}"></label>
+	    							<input type="text" class="form-control form-control-sm" th:field="*{taller.movil}" readonly>
+		                        </div>
+		                        <div class=" form-group col-md-2">
+									<label class="col-form-label col-form-label-sm" th:text="#{literal.email}"></label>
+	    							<input type="text" class="form-control form-control-sm" th:field="*{taller.email}" readonly>
+		                        </div>
+							</div>
+							<div class="form-row">
+	                        	<div class="form-group col-md-2">
+		                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.tipo.via}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{taller.tipoVia}" disabled>
+		                        		<option th:each="via : ${listaVias}" th:value="${taller.via.id}" th:text="${taller.via.nombre}" />
+		                        	</select>
+		                        </div>
+	                            <div class="form-group col-md-2">
+	                                <label class="col-form-label col-form-label-sm" th:text="#{literal.numero}"></label>
+	                                <input type="text" class="form-control form-control-sm" th:field="*{taller.numero}" readonly>
+	                            </div>
+	                            <div class="form-group col-md-1">
+	                                <label class="col-form-label col-form-label-sm" th:text="#{literal.planta}"></label>
+	                                <input type="text" class="form-control form-control-sm" th:field="*{taller.planta}" readonly>
+	                            </div>
+	                            <div class="form-group col-md-1">
+	                                <label class="col-form-label col-form-label-sm" th:text="#{literal.puerta}"></label>
+	                                <input type="text" class="form-control form-control-sm" th:field="*{taller.puerta}" readonly>
+	                            </div>
+	                            <div class="form-group col-md-2">
+	                                <label class="col-form-label col-form-label-sm" th:text="#{literal.codigo.postal}"></label>
+	                                <input type="text" class="form-control form-control-sm" th:field="*{taller.cp}" readonly>
+	                            </div>
+	                            <div class="form-group col-md-2">
+		                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.provincia}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{taller.provincia}" disabled>
+		                        		<option th:each="provincia : ${listaProvincias}" th:value="${taller.provincia.id}" th:text="${taller.provincia.nombre}" />
+		                        	</select>
+		                        </div>
+			                     <div class="form-group col-md-2">
+		                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.municipio}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{taller.municipio}" disabled>
+		                        		<option th:fragment="listaMunicipios" th:each="municipio : ${listaMunicipios}" th:value="${taller.id}" th:text="${municipio.taller}" />
+		                        	</select>
+		                        </div>
+							</div>
+						</div>
+					</div>
+                    <!-- Datos taller -->
+
+	                <!-- Botones -->
+	                <div class="card-footer color-white">
+		                <div class="form-row float-right">
+		                    <a class="btn btn-success margin-right-20" th:href="@{'/gseg/siniestro/editar/' + *{siniestro.id}}" th:text="!${soloLectura} ? #{literal.cancelar} : #{literal.volver}"></a>
+		                	<button th:if="!${soloLectura}" class="btn btn-success" type="submit" th:text="#{literal.guardar}"></button>
+		                </div>
+	                </div>
+	                <!-- Botones -->
+				</div>
+            </form>
+
+        </div>
+        <!-- Formulario peritacion -->
+
+		<!-- Modal para selecionar perito -->
+		<div class="modal fade" id="select-modal-perito" tabindex="-1" role="dialog">
+			<div class="modal-dialog modal-xl" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title" th:text="#{perito.gestion.seleccionar}"></h4>
+						<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<!-- Tabla perito -->
+						<div class="table-responsive margin-bottom-20">
+							<table id="tablaPerito" class="table table-bordered display dt-responsive nowrap" style="width: 100%">
+								<thead>
+									<tr>
+										<th></th>
+										<th data-priority="1" th:text="#{literal.nombre}"></th>
+										<th th:text="#{literal.ape1}"></th>
+										<th th:text="#{literal.ape2}"></th>
+										<th th:text="#{literal.telefono}"></th>
+										<th th:text="#{literal.movil}"></th>
+										<th th:text="#{literal.email}"></th>
+										<th data-priority="2" th:text="#{literal.acciones}"></th>
+									</tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
+						<!-- Tabla perito -->
+						<!-- Botones -->
+						<div class="form-row float-right">
+							<button type="button" class="btn btn-danger margin-right-20" data-dismiss="modal" th:text="#{literal.cancelar}"></button>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+         <!-- Modal para selecionar perito -->
+
+         <!-- Modal para selecionar taller -->
+		<div class="modal fade" id="select-modal-taller" tabindex="-1" role="dialog">
+			<div class="modal-dialog modal-xl" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title" th:text="#{taller.gestion.seleccionar}"></h4>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<!-- Tabla taller -->
+						<div class="table-responsive margin-bottom-20">
+							<table id="tablaTaller" class="table table-bordered display dt-responsive nowrap" style="width: 100%">
+								<thead>
+									<tr>
+										<th></th>
+										<th data-priority="1" th:text="#{literal.nombre}"></th>
+										<th th:text="#{literal.identificador}"></th>
+										<th th:text="#{literal.direccion}"></th>
+										<th th:text="#{literal.telefono}"></th>
+										<th th:text="#{literal.movil}"></th>
+										<th th:text="#{literal.email}"></th>
+										<th data-priority="2" th:text="#{literal.acciones}"></th>
+									</tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
+						<!-- Tabla taller -->
+						<!-- Botones -->
+						<div class="form-row float-right">
+							<button type="button" class="btn btn-danger margin-right-20" data-dismiss="modal" th:text="#{literal.cancelar}"></button>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+         <!-- Modal para selecionar taller -->
+
+    </div>
+
+    <th:block layout:fragment="script">
+	    <script type="text/javascript">
+	        $(document).ready(function() {
+	        	var soloLectura = [[${soloLectura}]];
+
+	        	// Cambia los atributos a solo lectura en caso de estar en la vista
+	        	if (soloLectura) {
+	        		var input = document.getElementsByTagName("input");
+	        		for ( var i = 0; i < input.length; i++) {
+	        			input[i].setAttribute("readonly","true");
+	        		}
+	        		var select = document.getElementsByTagName("select");
+	        		for ( var i = 0; i < select.length; i++) {
+	        			select[i].setAttribute("disabled","true");
+	        		}
+	        		document.getElementById("textArea").disabled = true;
+	        	}
+
+	            var table = $('#tablaPerito').DataTable({
+                    ajax: "/listaPeritos",
+                    ajaxDataProp: "",
+                    language: {
+                        "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+                    },
+                    columns: [
+                    	{ data: "id", visible: false },
+                    	{ data: "nombre" },
+                    	{ data: "ape1" },
+                    	{ data: "ape2" },
+                    	{ data: "telefono" },
+                    	{ data: "movil" },
+                    	{ data: "email" },
+                    	{
+                        	data: null,
+                        	orderable: false,
+                        	searchable: false,
+                        	render: function(data, type, row, meta) {
+                            	var id = row['id'];
+                            	var idPeritacion = document.getElementById("idPeritacion").value;
+                            	var enlaceSeleccionar = `<a class="text-success margin-right-10" title="[[#{literal.seleccionar}]]" href="[[@{/gseg/siniestro/peritacion/asignar/perito/${idPeritacion}/${id}}]]"><i class="fas fa-check"></i></a>`;
+
+                            	return enlaceSeleccionar;
+                        	}
+                    }],
+                    // control al crear la fila, para colorear el fondo de la fila.
+                    createdRow: function(row, data, index) {
+                        if (index % 2 != 0) {
+                            $(row).addClass('fila-impar');
+                        }
+                    }
+                });
+
+	            var table = $('#tablaTaller').DataTable({
+                    ajax: "/listaTalleres",
+                    ajaxDataProp: "",
+                    language: {
+                        "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+                    },
+                    columns: [
+                    	{ data: "id", visible: false },
+                    	{ data: "nombre" },
+                    	{ data: "identificador" },
+                    	{ data: "nombreVia" },
+                    	{ data: "telefono" },
+                    	{ data: "movil" },
+                    	{ data: "email" },
+                    	{
+                        	data: null,
+                        	orderable: false,
+                        	searchable: false,
+                        	render: function(data, type, row, meta) {
+                            	var id = row['id'];
+                            	var idPeritacion = document.getElementById("idPeritacion").value;
+                            	var enlaceSeleccionar = `<a class="text-success margin-right-10" title="[[#{literal.seleccionar}]]" href="[[@{/gseg/siniestro/peritacion/asignar/taller/${idPeritacion}/${id}}]]"><i class="fas fa-check"></i></a>`;
+
+                            	return enlaceSeleccionar;
+                        	}
+                    }],
+                    // control al crear la fila, para colorear el fondo de la fila.
+                    createdRow: function(row, data, index) {
+                        if (index % 2 != 0) {
+                            $(row).addClass('fila-impar');
+                        }
+                    }
+                });
+
+	        });
+
+	    </script>
+
+    </th:block>
+
+</body>
+
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- El título será sustituido por CONTENT_TITLE -->
+    <title layout:title-pattern="$CONTENT_TITLE"></title>
+
+    <!-- Custom fonts for this template-->
+    <link th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.21/datatables.min.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+        
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.5/css/responsive.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css" />    
+
+    <!-- Custom styles for this template-->
+    <link th:href="@{/css/sb-admin-2.min.css}" rel="stylesheet">
+    <link th:href="@{/css/sb-admin-2.css}" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - letras gseg (inicio gestor y administrador) -->
+            <a th:if="${admin} or ${gestor} and !${usuario}" class="sidebar-brand d-flex align-items-center justify-content-center" href="#" th:href="@{/gseg/inicio/}">
+                <div class="sidebar-brand-text mx-3">
+                	<span th:text="#{literal.gseg}"></span>
+                </div>
+            </a>
+            
+            <!-- Sidebar - letras gseg (inicio usuario) -->
+            <a th:if="${usuario} and !${gestor} and !${admin}" class="sidebar-brand d-flex align-items-center justify-content-center" href="#" th:href="@{/gseg/inicio/usuario}">
+                <div class="sidebar-brand-text mx-3">
+                	<span th:text="#{literal.gseg}"></span>
+                </div>
+            </a>
+            
+			<!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline">            	
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - letras gseg (inicio gestor y administrador) -->
+            <li class="nav-item" th:classappend="${inicioActive} ? active">
+                <a th:if="${admin} or ${gestor} and !${usuario}" class="nav-link" th:href="@{/gseg/inicio/}">
+                    <i class="fas fa-home"></i>
+                    <span th:text="#{literal.inicio}"></span></a>
+            </li>
+            
+            <!-- Nav Item - letras gseg (usuario) -->
+            <li class="nav-item" th:classappend="${inicioActive} ? active">
+                <a th:if="${usuario} and !${gestor} and !${admin}" class="nav-link" th:href="@{/gseg/inicio/usuario}">
+                    <i class="fas fa-home"></i>
+                    <span th:text="#{literal.inicio}"></span></a>
+            </li>
+
+            <hr class="sidebar-divider">
+
+            <!-- Administración -->
+            <div th:if="${admin} and !${gestor} and !${usuario}">
+                <div class="sidebar-heading" th:text="#{literal.administracion}"></div>                
+                <li class="nav-item" th:classappend="${usuarioActive} ? active">
+                    <a class="nav-link" th:href="@{/gseg/usuario/gestion}">
+                        <i class="fas fa-user"></i>
+                        <span th:text="#{literal.usuarios}"></span>
+                    </a>
+                </li>
+            </div>
+
+            <hr th:if="${gestor} or ${admin} and !${usuario}" class="sidebar-divider">
+
+            <!-- Gestión -->
+            <div th:if="${gestor} or ${admin} and !${usuario}">
+                <div class="sidebar-heading" th:text="#{literal.gestion}"></div>
+                <li class="nav-item" th:classappend="${clienteActive} ? active">
+                    <a class="nav-link" th:href="@{/gseg/cliente/gestion}">
+                        <i class="fas fa-user-shield"></i>
+                        <span th:text="#{literal.clientes}"></span>
+                    </a>
+                </li>
+                <li class="nav-item" th:classappend="${polizaActive} ? active">
+                    <a class="nav-link" th:href="@{/gseg/poliza/gestion}">
+                        <i class="fas fa-file-invoice"></i>
+                        <span th:text="#{literal.polizas}"></span>
+                    </a>
+                </li>
+                <li class="nav-item" th:classappend="${ciaActive} ? active">
+                    <a class="nav-link" th:href="@{/gseg/cia/gestion}">
+                        <i class="fas fa-building"></i>
+                        <span th:text="#{literal.cias}"></span>
+                    </a>
+                </li>
+                <li class="nav-item" th:classappend="${ramoActive} ? active">
+                    <a class="nav-link" th:href="@{/gseg/ramo/gestion}">
+                        <i class="fas fa-retweet"></i>
+                        <span th:text="#{literal.ramos}"></span>
+                    </a>
+                </li>
+                <li class="nav-item" th:classappend="${reciboActive} ? active">
+                    <a class="nav-link" th:href="@{/gseg/recibo/gestion}">
+                        <i class="fas fa-money-bill-wave-alt"></i>
+                        <span th:text="#{literal.recibos}"></span>
+                    </a>
+                </li>
+                <li class="nav-item" th:classappend="${siniestroActive} ? active">
+                    <a class="nav-link" th:href="@{/gseg/siniestro/gestion}">
+                        <i class="fas fa-fire"></i>
+                        <span th:text="#{literal.siniestros}"></span>
+                    </a>
+                </li>
+                <li class="nav-item" th:classappend="${peritoActive} ? active">
+                    <a class="nav-link" th:href="@{/gseg/perito/gestion}">
+                        <i class="fas fa-drafting-compass"></i>
+                        <span th:text="#{literal.peritos}"></span>
+                    </a>
+                </li>
+                <li class="nav-item" th:classappend="${tallerActive} ? active">
+                    <a class="nav-link" th:href="@{/gseg/taller/gestion}">
+                        <i class="fas fa-wrench"></i>
+                        <span th:text="#{literal.talleres}"></span>
+                    </a>
+                </li>
+            </div>
+
+            <!-- Divider -->
+            <hr  th:if="${gestor} or ${admin} and !${usuario}" class="sidebar-divider d-none d-md-block">
+
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+
+                        <!-- Nav Item - Información de usuario -->
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span th:text="${nombreUsuario}"></span>
+                                <i class="fas fa-user fa-2x fa-fw mr-2 text-gray-400"></i>
+                            </a>
+                            <!-- Dropdown - Información de usuario -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal-logout">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    <span th:text="#{literal.cerrar.sesion}"></span>
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                        <!-- Page content -->
+                        <div layout:fragment="contentpage"></div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span th:text="#{pie.pagina}"></span>
+                    </div>
+                </div>
+            </footer>
+            <!-- Fin Footer -->
+
+        </div>
+        <!-- Fin Content Wrapper -->
+
+    </div>
+    <!-- Fin Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+	<!-- Modal logout -->
+		<div class="modal fade" id="modal-logout" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title"></h4>
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>													
+					</div>
+					<div class="modal-body">
+						<p></p>							
+						<button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{literal.no}"></button>
+						<a href="#" class="btn btn-danger" th:text="#{literal.si}"></a>
+					</div>
+				</div>
+	
+			</div>
+		</div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.13.4/jquery.mask.js"></script>    
+
+    <!-- Bootstrap core JavaScript-->    
+    <script th:src="@{//vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>  
+    
+    <!-- Core plugin JavaScript-->
+    <script th:src="@{//vendor/jquery-easing/jquery.easing.min.js}"></script>  
+
+    <!-- Custom scripts for all pages-->
+    <script th:src="@{//js/sb-admin-2.min.js}"></script>
+
+    <!-- Page level plugins -->
+    <script th:src="@{//vendor/chart.js/Chart.min.js}"></script>
+    
+    <script src="https://cdn.datatables.net/v/bs4/dt-1.10.21/datatables.min.js"></script>    
+    <script src="https://cdn.datatables.net/responsive/2.2.5/js/dataTables.responsive.min.js"></script>
+     <script src="https://unpkg.com/autonumeric"></script>
+
+    <th:block layout:fragment="script"></th:block>
+    
+    <script type="text/javascript">
+		$(document).ready(function() {
+			
+            //Modal logout
+            $('#modal-logout').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);                
+
+                var modal = $(this);
+
+                var a = modal.find('.modal-body a')[0];                
+                modal.find('.modal-header h4').text('Cerrar sesión');
+                modal.find('.modal-body p').text('¿Está usted seguro de cerrar sesión?');
+                a.href = '/gseg/logout';                                
+            });
+					
+		});
+	</script>
+
+
+</body>
+
+</html>

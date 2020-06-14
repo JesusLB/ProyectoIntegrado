@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/baseLayout}">
+
+<head>
+<meta charset="UTF-8">
+<title th:text="#{poliza.gestion.titulo}"></title>
+</head>
+
+<body>
+
+	<div layout:fragment="contentpage">
+
+		<!-- Mensaje guardado correctamente -->
+		<div th:if="${polizaGuardada}" class="alert alert-success alert-dismissible fade show" role="alert">
+			<span th:text="#{poliza.gestion.guardado}"></span>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+
+		<!-- Tabla pólizas -->
+		<div class="card shadow">
+			<div class="card-header color-white">
+				<h5 th:text="#{poliza.gestion.busqueda}"></h5>
+			</div>
+			<div class="card-body">
+				<a class="btn btn-success margin-bottom-20" type="button" th:href="@{/gseg/poliza/alta}" th:text="#{poliza.gestion.nuevo}"></a>
+				<div class="table-responsive">
+					<table id="tablaPoliza" class="table table-bordered display dt-responsive nowrap" style="width: 100%">
+						<thead>
+							<tr>
+								<th></th>
+                                <th data-priority="1" th:text="#{literal.identificador}"></th>
+                                <th th:text="#{literal.numero}"></th>
+                                <th th:text="#{literal.forma.pago}"></th>
+                                <th th:text="#{literal.fecha.efecto}"></th>
+                                <th th:text="#{literal.fecha.renov}"></th>
+                                <th th:text="#{literal.fecha.vto}"></th>
+                                <th th:text="#{literal.riesgo}"></th>
+                                <th data-priority="2" th:text="#{literal.acciones} "></th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+		</div>
+		<!-- Tabla pólizas -->
+
+		<!-- Modal activar/desactivar -->
+			<div class="modal fade" id="active-modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title"></h4>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<p></p>
+							<button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{literal.no}"></button>
+							<a href="#" class="btn btn-danger" th:text="#{literal.si}"></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		<!-- Modal activar/desactivar -->
+
+	</div>
+
+	<th:block layout:fragment="script">
+		<script type="text/javascript">
+			$(document).ready(function(){
+
+				//Modal para activar/desactivar cliente
+				$('#active-modal').on('show.bs.modal', function(event) {
+					var button = $(event.relatedTarget);
+					var data = button.data('id');
+					var activo = button.data('activo');
+
+					var modal = $(this);
+
+					var a = modal.find('.modal-body a')[0];
+					if (activo) {
+						modal.find('.modal-header h4').text('Anular póliza');
+						modal.find('.modal-body p').text('¿Está usted seguro de anular esta póliza?');
+						a.href = '/gseg/poliza/desactivar/' + data;
+					} else {
+						modal.find('.modal-header h4').text('Activar póliza');
+						modal.find('.modal-body p').text('¿Está usted seguro de activar esta póliza?');
+						a.href = '/gseg/poliza/activar/' + data;
+					}
+				});
+
+				//Mascara para la tabla
+				function formatoFecha(fecha){
+					var fechaFormateada = "";
+					if(fecha != null){
+						var partes = fecha.split("-");
+						var fechaFormateada = partes[2] + "/" + partes[1] + "/" + partes[0];
+					}
+					return fechaFormateada;
+				}
+				function formatoFormaPago(formaPago){
+					var cadena;
+					if (formaPago === "B"){
+						cadena = "Banco";
+					} else {
+						cadena = "Físico";
+					}
+					return cadena;
+				}
+
+                var table = $('#tablaPoliza').DataTable({
+                    ajax: "/listaPolizas",
+                    ajaxDataProp: "",
+                    language: {
+                        "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+                    },
+                    columns: [
+                    	{ data: "id", visible: false },
+                    	{ data: "cliente.identificador" },
+                    	{ data: "numPoliza" },
+                    	{ 
+                    		data: "formaPago",
+                    		render: function (data){
+                    			return formatoFormaPago(data);
+                    		}
+                    	},
+                    	{ 
+                    		data: "fechaEfecto",
+                    		render: function (data){
+                    			return formatoFecha(data);
+                    		}
+                    	},
+                    	{ 
+                    		data: "fechaRenov",
+                    		render: function (data){
+                    			return formatoFecha(data);
+                    		}
+                    	},
+                    	{ 
+                    		data: "fechaVto",
+                    		render: function (data){
+                    			return formatoFecha(data);
+                    		}
+                    	},
+                    	{ data: "riesgo" },
+                    	{
+                        	data: null,
+                        	orderable: false,
+                        	searchable: false,
+                        	render: function(data, type, row, meta) {
+                            	var idPoliza = row['id'];
+                            	var activo = row['activo'];
+                            	var enlaces = '';
+                            	var enlaceVer = `<a class="text-success margin-right-10" title="[[#{literal.ver}]]" href="[[@{/gseg/poliza/ver/${idPoliza}}]]"><i class="fas fa-eye fa-sm"></i></a>`;
+                            	var enlaceEditar = `<a class="text-success margin-right-10" title="[[#{literal.editar}]]" href="[[@{/gseg/poliza/editar/${idPoliza}}]]"><i class="fas fa-edit fa-sm"></i></a>`;
+                            	var enlaceActivar = `<a class="text-success" href="#" title="[[#{literal.activar}]]" data-toggle="modal" data-target="#active-modal" data-id="${idPoliza}" data-activo="${activo}"><i class="fas fa-user-plus fa-sm"></i></a>`;
+                            	var enlaceAnular = `<a class="text-success" href="#" title="[[#{literal.anular.poliza}]]" data-toggle="modal" data-target="#active-modal" data-id="${idPoliza}" data-activo="${activo}"><i class="fas fa-user-minus fa-sm"></i></a>`;
+                            	if (row['activo'] === true) {
+                                	enlaces = enlaceVer + enlaceEditar + enlaceAnular;
+                            	} else {
+                                	enlaces = enlaceVer + enlaceEditar + enlaceActivar;
+                            	}
+                            	return enlaces;
+                        	}	
+                    }],
+                    // control al crear la fila, para colorear el fondo de la fila en rojo a las entidades no activas
+                    createdRow: function(row, data, index) {
+                        if (index % 2 != 0 && data['activo'] === true) {
+                            $(row).addClass('fila-impar');
+                        }
+                        if (data['activo'] === false) {
+                            $(row).addClass('fila-anulada');
+                        }
+                    }
+
+                });
+
+			});
+		</script>
+	</th:block>
+
+</body>
+
+</html>

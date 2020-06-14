@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/baseLayout}">
+<head>
+<meta charset="UTF-8">
+<title th:text="#{taller.gestion.titulo}"></title>
+</head>
+<body>
+
+	<div layout:fragment="contentpage">
+
+	    <!-- Mensaje taller guardado correctamente -->
+        <div th:if="${tallerGuardado}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="#{taller.gestion.guardado}"></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+        </div>
+
+        <!-- Mensaje taller eliminado correctamente -->
+        <div th:if="${tallerEliminado}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="#{taller.gestion.eliminado}"></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+        </div>
+
+		<!-- Tabla taller -->
+		<div class="card shadow">
+			<div class="card-header color-white">
+				<h5 th:text="#{taller.gestion.busqueda}"></h5>
+			</div>
+			<div class="card-body">
+				<a class="btn btn-success margin-bottom-20" type="button" th:href="@{/gseg/taller/alta}" th:text="#{taller.gestion.nuevo}"></a>
+				<div class="table-responsive margin-bottom-20">
+					<table id="tablaTaller" class="table table-bordered display dt-responsive nowrap" style="width: 100%">
+						<thead>
+							<tr>
+								<th></th>
+								<th data-priority="1" th:text="#{literal.nombre}"></th>
+								<th th:text="#{literal.direccion}"></th>
+								<th th:text="#{literal.telefono}"></th>
+								<th th:text="#{literal.movil}"></th>
+								<th th:text="#{literal.email}"></th>
+								<th data-priority="2" th:text="#{literal.acciones}"></th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+		</div>
+		<!-- Tabla taller -->
+
+		<!-- Modal para eliminar taller -->
+		<div class="modal fade" id="delete-modal-taller" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title"></h4>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p></p>
+						<button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{literal.no}"></button>
+						<a href="#" class="btn btn-danger" th:text="#{literal.si}"></a>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+
+	 <th:block layout:fragment="script">
+        <script type="text/javascript">
+            $(document).ready(function() {
+
+				//Modal para eliminar un taller
+				$('#delete-modal-taller').on('show.bs.modal', function(event) {
+					var button = $(event.relatedTarget);
+					var data = button.data('id');
+
+					var modal = $(this);
+
+					var a = modal.find('.modal-body a')[0];
+					modal.find('.modal-header h4').text('Eliminar taller');
+					modal.find('.modal-body p').text('¿Está usted seguro de eliminar este taller?');
+					a.href = '/gseg/taller/eliminar/' + data;
+				});
+
+                var table = $('#tablaTaller').DataTable({
+                    ajax: "/listaTalleres",
+                    ajaxDataProp: "",
+                    language: {
+                        "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+                    },
+                    columns: [
+                    	{ data: "id", visible: false },
+                    	{ data: "nombre" },
+                    	{ data: "nombreVia" },
+                    	{ data: "telefono" },
+                    	{ data: "movil" },
+                    	{ data: "email" },
+                    	{
+                        	data: null,
+                        	orderable: false,
+                        	searchable: false,
+                        	render: function(data, type, row, meta) {
+                            	var idTaller = row['id'];
+                            	var enlaces = '';
+                            	var enlaceVer = `<a class="text-success margin-right-10" title="[[#{literal.ver}]]" href="[[@{/gseg/taller/ver/${idTaller}}]]"><i class="fas fa-eye fa-sm"></i></a>`;
+                            	var enlaceEditar = `<a class="text-success margin-right-10" title="[[#{literal.editar}]]" href="[[@{/gseg/taller/editar/${idTaller}}]]"><i class="fas fa-edit fa-sm"></i></a>`;
+                            	var enlaceEliminar = `<a class="text-success" href="#" title="[[#{literal.eliminar}]]" data-toggle="modal" data-target="#delete-modal-taller" data-id="${idTaller}"><i class="fas fa-trash-alt fa-sm"></i></a>`;
+
+                            	return enlaceVer + enlaceEditar + enlaceEliminar;
+                        	}
+                    }]
+
+                });
+
+            });
+        </script>
+    </th:block>
+
+</body>
+</html>

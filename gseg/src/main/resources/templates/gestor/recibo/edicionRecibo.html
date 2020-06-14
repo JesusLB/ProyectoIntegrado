@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/baseLayout}">
+
+<head>
+<meta charset="UTF-8">
+<title th:text="#{recibo.gestion.titulo}"></title>
+</head>
+
+<body>
+
+	<div layout:fragment="contentpage">
+
+		<div class="card margin-bottom-20 padding-bottom-20">
+
+			<div class="card-header color-white">
+				<h5 th:if="${reciboForm.id} == 0" th:text="#{recibo.gestion.alta}"></h5>
+				<h5 th:if="${reciboForm.id} != 0 and ${soloLectura}" th:text="#{recibo.gestion.vista}"></h5>
+				<h5 th:if="${reciboForm.id} != 0 and !${soloLectura}" th:text="#{recibo.gestion.editar}"></h5>
+			</div>
+
+			<div class="card-body">
+
+				<!-- Formulario busqueda poliza -->
+				<form method="post" action="#" th:action="@{/gseg/recibo/poliza}" th:object="${reciboForm}">
+					<div class="form-row">
+						<div class="form-group col-md-3" th:classappend="${#fields.hasErrors('poliza.numPoliza')} ? 'has-error'">
+							<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.numero.poliza}"></label>
+							<input type="text" id="numPoliza" class="form-control form-control-sm persist-input" th:field="*{poliza.numPoliza}">
+							<span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('poliza.numPoliza')}" th:errors="*{poliza.numPoliza}"></span>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<br>
+								<button th:if="!${soloLectura}" type="submit" class="btn btn-success" th:text="#{literal.buscar.poliza}"></button>
+							</div>
+						</div>
+					</div>
+				</form>
+				<!-- Formulario busqueda poliza -->
+
+				<!-- Formulario recibo -->
+				<form method="post" action="#" th:action="@{/gseg/recibo/guardar}" th:object="${reciboForm}">
+					<input type="hidden" th:field="*{id}" id="idRecibo" />
+					<input type="hidden" th:field="*{poliza.id}" id="idPoliza" />
+
+					<!-- Datos poliza -->
+					<h6>
+						<span th:text="#{literal.datos.poliza}"></span>
+						<button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosPoliza">
+							<i class="fa fa-minus"></i>
+						</button>
+					</h6>
+					<hr class="btn-success line-form">
+					<div class="show margin-bottom-20" id="datosPoliza">
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.efecto}"></label>
+	                            <input type="date" class="form-control form-control-sm persist-input" th:field="*{poliza.fechaEfecto}" readonly>
+							</div>
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.renov}"></label>
+	                            <input type="date" class="form-control form-control-sm persist-input" th:field="*{poliza.fechaRenov}" readonly>
+							</div>
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.vto}"></label>
+	                            <input type="date" class="form-control form-control-sm persist-input" th:field="*{poliza.fechaVto}" readonly>
+							</div>
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.anulacion}"></label>
+	                        	<input type="date" class="form-control form-control-sm persist-input" th:field="*{poliza.fechaAnulacion}" readonly>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+		                       	<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.forma.pago}"></label>
+		                       	<select id="documento" class="form-control form-control-sm" th:field="*{poliza.formaPago}" disabled>
+		                       		<option th:value="-1" th:text="#{literal.seleccione}">		                        		
+		                       		<option th:each="pago : ${listaTipoPago}" th:value="${pago.value}" th:text="${pago.text}" />
+		                       	</select>		                        	                            
+		                    </div>
+							<div class="form-group col-md-6">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.riesgo}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{poliza.riesgo}" readonly>
+							</div>
+						</div>
+					</div>
+					<!-- Datos poliza -->
+
+					<!-- Datos recibo -->
+					<h6>
+						<span th:text="#{literal.datos.recibo}"></span>
+						<button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosRecibo">
+							<i class="fa fa-minus"></i>
+						</button>
+					</h6>
+					<hr class="btn-success line-form">
+
+					<!-- Si es alta mostramos mensaje -->
+					<div th:if="*{poliza.id} == 0" class="alert alert-info" role="alert">
+						<div class="row">
+							<div class="col-md-1">
+								<i class="fas fa-info-circle fa-2x"></i>
+							</div>
+							<div class="col-md-11">
+								<label th:text="#{recibo.gestion.formulario}"></label>
+							</div>
+						</div>
+					</div>
+
+					<!-- Si se ha buscado a poliza mostramos formulario -->
+					<div th:if="*{poliza.id} != 0">
+						<div class="show margin-bottom-20" id="datosRecibo">
+		                    <div class="form-row">
+		                        <div class="form-group col-md-3" th:classappend="${#fields.hasErrors('fechaEfecto')} ? 'has-error'">
+		                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.fecha.efecto}"></label>
+		                            <input type="date" class="form-control form-control-sm persist-input" th:field="*{fechaEfecto}">
+		                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('fechaEfecto')}" th:errors="*{fechaEfecto}"></span>
+		                        </div>
+		                        <div class="form-group col-md-3" th:classappend="${#fields.hasErrors('fechaVto')} ? 'has-error'">
+		                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.fecha.vto}"></label>
+		                            <input type="date" class="form-control form-control-sm persist-input" th:field="*{fechaVto}">
+		                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('fechaVto')}" th:errors="*{fechaVto}"></span>
+		                        </div>
+		                        <div class="form-group col-md-3">
+		                        	<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.estado}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{estado}">
+		                        		<option th:value="-1" th:text="#{literal.seleccione}">
+		                        		<option th:each="estado : ${listaEstado}" th:value="${estado.value}" th:text="${estado.text}" />
+		                        	</select>
+		                        	<span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}"></span>
+		                        </div>
+		                        <div class="form-group col-md-3">
+									<br>
+									<div class="custom-control custom-checkbox">
+									  <input type="checkbox" class="custom-control-input" id="defaultChecked2" th:field="*{activo}" th:title="#{literal.activo}" th:checked="*{activo}">
+									  <label class="custom-control-label col-form-label-sm" for="defaultChecked2" th:text="#{literal.activo}"></label>
+									</div>
+								</div>
+							</div>
+							<div class="form-row">
+		                        <div class="form-group col-md-2" th:classappend="${#fields.hasErrors('primaNeta')} ? 'has-error'">
+		                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.prima.neta}"></label>
+		                            <input type="text" class="form-control form-control-sm persist-input" id="primaNeta" th:field="*{primaNeta}" maxlength="10">
+		                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('primaNeta')}" th:errors="*{primaNeta}"></span>
+		                        </div>
+		                        <div class="form-group col-md-2" th:classappend="${#fields.hasErrors('ips')} ? 'has-error'">
+		                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.ips}"></label>
+		                            <input type="text" class="form-control form-control-sm persist-input moneda" id="ips" th:field="*{ips}" maxlength="10">
+		                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('ips')}" th:errors="*{ips}"></span>
+		                        </div>
+		                        <div class="form-group col-md-2" th:classappend="${#fields.hasErrors('consorcio')} ? 'has-error'">
+		                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.consorcio}"></label>
+		                            <input type="text" class="form-control form-control-sm persist-input moneda" id="consorcio" th:field="*{consorcio}" maxlength="10">
+		                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('consorcio')}" th:errors="*{consorcio}"></span>
+		                        </div>
+		                        <div class="form-group col-md-2" th:classappend="${#fields.hasErrors('impuestos')} ? 'has-error'">
+		                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.impuestos}"></label>
+		                            <input type="text" class="form-control form-control-sm persist-input moneda" id="impuestos" th:field="*{impuestos}" maxlength="10">
+		                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('impuestos')}" th:errors="*{impuestos}"></span>
+		                        </div>
+		                        <div class="form-group col-md-2" th:classappend="${#fields.hasErrors('comision')} ? 'has-error'">
+		                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.comision}"></label>
+		                            <input type="text" class="form-control form-control-sm persist-input moneda" id="comision" th:field="*{comision}" maxlength="10">
+		                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('comision')}" th:errors="*{comision}"></span>
+		                        </div>
+							</div>
+						</div>
+					</div>
+					<!-- Datos recibo -->
+
+					<!-- Botones -->
+					<div class="card-footer color-white">
+						<div class="form-row float-right">
+							<a class="btn btn-success margin-right-20" th:href="@{/gseg/recibo/gestion}" th:text="!${soloLectura} ? #{literal.cancelar} : #{literal.volver}"></a>
+							<button th:if="!${soloLectura}" class="btn btn-success" type="submit" th:text="#{literal.guardar}"></button>
+						</div>
+					</div>
+					<!-- Botones -->
+
+				</form>
+				<!-- Formulario recibo -->
+
+			</div>
+
+		</div>
+
+	</div>
+
+	<th:block layout:fragment="script">		
+		<script type="text/javascript">
+	        $(document).ready(function() {
+
+	        	var soloLectura = [[${soloLectura}]];
+	        	var idRecibo = document.getElementById("idRecibo").value;
+	        	var idPoliza = document.getElementById("idPoliza").value;
+
+	        	if(idRecibo == 0 && idPoliza != 0){
+		        	// máscara para el formulario
+		        	const autoNumericOptionsEuro = {
+					    digitGroupSeparator			: '.',
+					    decimalCharacter			: ',',
+					    decimalCharacterAlternative	: '.',
+					    maximumValue				: '99999',
+					    currencySymbol				: ' €',
+					    currencySymbolPlacement		: AutoNumeric.options.currencySymbolPlacement.suffix,
+					    roundingMethod				: AutoNumeric.options.roundingMethod.halfUpSymmetric,
+					};
+					new AutoNumeric('#primaNeta', autoNumericOptionsEuro);
+					new AutoNumeric('#ips', autoNumericOptionsEuro );
+					new AutoNumeric('#consorcio', autoNumericOptionsEuro );
+					new AutoNumeric('#impuestos', autoNumericOptionsEuro );
+					new AutoNumeric('#comision', autoNumericOptionsEuro );
+	        	}
+	        	
+	        	// Cambia los atributos a solo lectura en caso de estar en la vista
+	        	if (soloLectura) {
+	        		var input = document.getElementsByTagName("input");
+	        		for ( var i = 0; i < input.length; i++) {
+	        			input[i].setAttribute("readonly","true");
+	        		}
+	        		var select = document.getElementsByTagName("select");
+	        		for ( var i = 0; i < select.length; i++) {
+	        			select[i].setAttribute("disabled","true");
+	        		}
+	        		document.getElementById("defaultChecked2").disabled = true;
+	        	}
+
+	        });
+
+	    </script>
+
+	</th:block>
+
+</body>
+
+</html>

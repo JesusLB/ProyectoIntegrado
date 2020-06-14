@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>gSeg Login</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Course CSS -->
+    <link rel="stylesheet" href="../static/css/login.css" th:href="@{/css/login.css}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Card -->
+        <div class="card" style="width: 35rem;">
+            <div class="card-body">
+                <div class="card-title">
+                    <h1><img th:src="@{/imgs/isotipo2.png}">Login</h1>
+                </div>
+                <hr class="mt-2 mb-3">
+                <form id=loginform method="POST" th:action="@{/gseg/login-post}" role="form">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1" th:text="#{literal.usuario}"></label>
+                        <input type="text" class="form-control" id="login-username" name="username" placeholder="00000000T">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1" th:text="#{literal.clave}" name="password"></label>
+                        <input type="password" class="form-control" id="login-password" name="password">
+                    </div>
+                    <div th:if="${param.error}" th:text=#{validacion.login} id="login-alert" class="alert alert-danger col-sm-12"></div>
+                    <div th:if="${param.logout}" id="login-alert" class="alert alert-danger col-sm-12"></div>                    
+					<hr class="mt-2 mb-3">
+                    <button id="btn-login" type="submit" class="btn btn-primary" th:text="#{literal.login}"></button>
+                </form>
+             
+            </div>
+        </div>
+        <!-- Card -->
+
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
+</body>
+
+</html>

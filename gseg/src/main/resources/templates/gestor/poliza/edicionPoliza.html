@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/baseLayout}">
+
+<head>
+<meta charset="UTF-8">
+<title th:text="#{poliza.gestion.titulo}"></title>
+</head>
+
+<body>
+
+	<div layout:fragment="contentpage">
+
+		<div class="card margin-bottom-20 padding-bottom-20">
+
+			<div class="card-header color-white">
+				<h5 th:if="${polizaForm.id} == 0" th:text="#{poliza.gestion.alta}"></h5>
+				<h5 th:if="${polizaForm.id} != 0 and ${soloLectura}" th:text="#{poliza.gestion.vista}"></h5>
+				<h5 th:if="${polizaForm.id} != 0 and !${soloLectura}" th:text="#{poliza.gestion.editar}"></h5>
+			</div>
+
+			<div class="card-body">
+
+				<!-- Formulario busqueda cliente -->
+				<form method="post" action="#" th:action="@{/gseg/poliza/cliente}" th:object="${polizaForm}">
+					<div class="form-row">
+						<div class="form-group col-md-3" th:classappend="${#fields.hasErrors('cliente.tipoDoc')} ? 'has-error'">
+							<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.tipo.documento}"></label>
+							<select id="documento" class="form-control form-control-sm" th:field="*{cliente.tipoDoc}">
+								<option th:value="0" th:text="#{literal.seleccione}">
+								<option th:each="documento : ${listaTipoDocumento}" th:value="${documento}" th:text="${documento}" />
+							</select>
+							<span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('cliente.tipoDoc')}" th:errors="*{cliente.tipoDoc}"></span>
+						</div>
+						<div class="form-group col-md-3" th:classappend="${#fields.hasErrors('cliente.identificador')} ? 'has-error'">
+							<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.identificador}"></label>
+							<input type="text" id="identificador" class="form-control form-control-sm persist-input" th:field="*{cliente.identificador}" maxlength="9" style="text-transform: uppercase;">
+							<span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('cliente.identificador')}" th:errors="*{cliente.identificador}"></span>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<br>
+								<button th:if="!${soloLectura}" type="submit" class="btn btn-success" th:text="#{literal.buscar.cliente}"></button>
+							</div>
+						</div>
+					</div>
+				</form>
+				<!-- Formulario busqueda cliente -->
+
+				<!-- Formulario poliza -->
+				<form method="post" action="#" th:action="@{/gseg/poliza/guardar}" th:object="${polizaForm}">
+					<input type="hidden" th:field="*{id}" id="idPoliza" />
+					<input type="hidden" th:field="*{cliente.id}" id="idCliente" />
+
+					<!-- Datos cliente -->
+					<h6>
+						<span th:text="#{literal.datos.cliente}"></span>
+						<button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosCliente">
+							<i class="fa fa-minus"></i>
+						</button>
+					</h6>
+					<hr class="btn-success line-form">
+					<div class="show margin-bottom-20" id="datosCliente">
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.nombre}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{cliente.nombre}" readonly>
+							</div>
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.ape1}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{cliente.ape1}" readonly>
+							</div>
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.ape2}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{cliente.ape2}" readonly>
+							</div>
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.nacimiento}"></label>
+	                        	<input type="date" class="form-control form-control-sm persist-input" th:field="*{cliente.fechaNac}" readonly>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.tipo.via}"></label>
+								<input type="text" class="form-control form-control-sm persist-input" th:field="*{cliente.tipoVia.nombre}" readonly>
+							</div>
+							<div class="form-group col-md-6">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.nombre.via}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{cliente.nombreVia}" readonly>
+							</div>
+							<div class="form-group col-md-1">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.numero}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{cliente.numero}" readonly>
+							</div>
+							<div class="form-group col-md-1">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.planta}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{cliente.planta}" readonly>
+							</div>
+							<div class="form-group col-md-1">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.puerta}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{cliente.puerta}" readonly>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-gorup col-md-2">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.provincia}"></label>
+								<input type="text" class="form-control form-control-sm" th:field="*{cliente.provincia.nombre}" readonly>
+							</div>
+							<div class="form-gorup col-md-2">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.municipio}"></label>
+								<input type="text" class="form-control form-control-sm" th:field="*{cliente.municipio.nombre}" readonly>
+							</div>
+							<div class="form-gorup col-md-2">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.codigo.postal}"></label>
+								<input type="text" class="form-control form-control-sm" th:field="*{cliente.cp}" readonly>
+							</div>
+							<div class="form-gorup col-md-2">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.telefono}"></label>
+								<input type="text" class="form-control form-control-sm" th:field="*{cliente.telefono}" readonly>
+							</div>
+							<div class="form-gorup col-md-2">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.movil}"></label>
+								<input type="text" class="form-control form-control-sm" th:field="*{cliente.movil}" readonly>
+							</div>
+							<div class="form-gorup col-md-2">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.email}"></label>
+								<input type="text" class="form-control form-control-sm" th:field="*{cliente.email}" readonly>
+							</div>
+						</div>
+					</div>
+					<!-- Datos cliente -->
+
+					<!-- Datos poliza -->
+					<h6>
+						<span th:text="#{literal.datos.poliza}"></span>
+						<button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosPoliza">
+							<i class="fa fa-minus"></i>
+						</button>
+					</h6>
+					<hr class="btn-success line-form">
+
+					<!-- Si es alta mostramos mensaje -->
+					<div th:if="*{cliente.id} == 0" class="alert alert-info" role="alert">
+						<div class="row">
+							<div class="col-md-1">
+								<i class="fas fa-info-circle fa-2x"></i>
+							</div>
+							<div class="col-md-11">
+								<label th:text="#{poliza.gestion.formulario}"></label>
+							</div>
+						</div>
+					</div>
+
+					<!-- Si se ha buscado a cliente mostramos formulario -->
+					<div th:if="*{cliente.id} != 0">
+						<div class="show margin-bottom-20" id="datosPoliza">
+							<div class="form-row">
+								<div class=" form-group col-md-3" th:classappend="${#fields.hasErrors('numPoliza')} ? 'has-error'">
+									<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.numero.poliza}"></label>
+									<input type="text" class="form-control form-control-sm persist-input" th:field="*{numPoliza}" maxlength="128" style="text-transform: uppercase;">
+									<span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('numPoliza')}" th:errors="*{numPoliza}"></span>
+								</div>
+								<div class="form-group col-md-3" th:classappend="${#fields.hasErrors('cia')} ? 'has-error'">
+		                        	<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.cia}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{cia}">
+		                        		<option th:value="-1" th:text="#{literal.seleccione}" />
+		                        		<option th:each="cia : ${listaCias}" th:value="${cia.id}" th:text="${cia.nombre}" />
+		                        	</select>
+		                        	<span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('cia')}" th:errors="*{cia}"></span>
+		                        </div>
+		                       	<div class="form-group col-md-3" th:classappend="${#fields.hasErrors('producto')} ? 'has-error'">
+		                        	<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.producto}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{producto}" th:value="*{producto}">
+		                        		<option th:fragment="listaProductos" th:each="producto : ${listaProductos}" th:value="${producto.id}" th:text="${producto.nombre}" />
+		                        	</select>
+		                        	<span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('producto')}" th:errors="*{producto}"></span>
+		                        </div>
+		                        <div class="form-group col-md-3" th:classappend="${#fields.hasErrors('ramo')} ? 'has-error'">
+		                        	<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.ramo}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{ramo}">
+		                        		<option th:value="-1" th:text="#{literal.seleccione}" />
+		                        		<option th:each="ramo : ${listaRamos}" th:value="${ramo.id}" th:text="${ramo.nombre}" />
+		                        	</select>
+		                        	<span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('ramo')}" th:errors="*{ramo}"></span>
+		                        </div>
+							</div>
+							<div class="form-row">
+								<div class=" form-group col-md-3" th:classappend="${#fields.hasErrors('fechaEfecto')} ? 'has-error'">
+									<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.fecha.efecto}"></label>
+	                                <input type="date" class="form-control form-control-sm" th:field="*{fechaEfecto}">
+	                                <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('fechaEfecto')}" th:errors="*{fechaEfecto}"></span>
+								</div>
+								<div class=" form-group col-md-3" th:classappend="${#fields.hasErrors('fechaRenov')} ? 'has-error'">
+									<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.fecha.renov}"></label>
+	                                <input type="date" class="form-control form-control-sm" th:field="*{fechaRenov}">
+	                                <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('fechaRenov')}" th:errors="*{fechaRenov}"></span>
+								</div>
+								<div class=" form-group col-md-3" th:classappend="${#fields.hasErrors('fechaVto')} ? 'has-error'">
+									<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.fecha.vto}"></label>
+	                                <input type="date" class="form-control form-control-sm" th:field="*{fechaVto}">
+	                                <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('fechaVto')}" th:errors="*{fechaVto}"></span>
+								</div>
+								<div class=" form-group col-md-3">
+									<label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.anulacion}"></label>
+	                                <input type="date" class="form-control form-control-sm" th:field="*{fechaAnulacion}" readonly>
+								</div>
+							</div>
+							<div class="form-row">
+								<div class=" form-group col-md-6" th:classappend="${#fields.hasErrors('riesgo')} ? 'has-error'">
+									<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.riesgo}"></label>
+	                                <input type="text" class="form-control form-control-sm" th:field="*{riesgo}" maxlength="128">
+	                                <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('riesgo')}" th:errors="*{riesgo}"></span>
+								</div>
+								<div class="form-group col-md-3" th:classappend="${#fields.hasErrors('formaPago')} ? 'has-error'">
+		                        	<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.forma.pago}"></label>
+		                        	<select id="documento" class="form-control form-control-sm" th:field="*{formaPago}">
+		                        		<option th:value="-1" th:text="#{literal.seleccione}">
+		                        		<option th:each="pago : ${listaTipoPago}" th:value="${pago.value}" th:text="${pago.text}" />
+		                        	</select>
+		                        	<span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('formaPago')}" th:errors="*{formaPago}"></span>
+		                        </div>
+								<div class="form-group col-md-3">
+									<br>
+									<div class="custom-control custom-checkbox">
+									  <input type="checkbox" class="custom-control-input" id="defaultChecked2" th:field="*{activo}" th:title="#{literal.activo}" th:checked="*{activo}">
+									  <label class="custom-control-label col-form-label-sm" for="defaultChecked2" th:text="#{literal.activo}"></label>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Datos poliza -->
+
+					<!-- Botones -->
+					<div class="card-footer color-white">
+						<div class="form-row float-right">
+							<a class="btn btn-success margin-right-20" th:href="@{/gseg/poliza/gestion}" th:text="!${soloLectura} ? #{literal.cancelar} : #{literal.volver}"></a>
+							<button th:if="!${soloLectura}" class="btn btn-success" type="submit" th:text="#{literal.guardar}"></button>
+						</div>
+					</div>
+					<!-- Botones -->
+
+				</form>
+				<!-- Formulario poliza -->
+
+			</div>
+
+		</div>
+
+	</div>
+
+	<th:block layout:fragment="script">
+		<script type="text/javascript">
+	        $(document).ready(function() {
+
+	        	var soloLectura = [[${soloLectura}]];
+	        	var idPoliza = document.getElementById("idPoliza").value;
+
+	        	/*Carga la lista de productos dependiendo de la cia elegida*/
+	        	$(function() {
+	        		if(idPoliza === 0){
+	        			$("#producto").load('/gseg/poliza/productos', $("#cia").serialize());
+	        		}
+	        		$('#cia').on('change', function() {
+	        			$("#producto").load('/gseg/poliza/productos', $("#cia").serialize());
+	        		});
+	        	});
+
+	        	// Cambia los atributos a solo lectura en caso de estar en la vista
+	        	if (soloLectura) {
+	        		var input = document.getElementsByTagName("input");
+	        		for ( var i = 0; i < input.length; i++) {
+	        			input[i].setAttribute("readonly","true");
+	        		}
+	        		var select = document.getElementsByTagName("select");
+	        		for ( var i = 0; i < select.length; i++) {
+	        			select[i].setAttribute("disabled","true");
+	        		}
+	        		document.getElementById("defaultChecked2").disabled = true;
+	        	}
+
+	        });
+
+	    </script>
+
+	</th:block>
+
+</body>
+
+</html>

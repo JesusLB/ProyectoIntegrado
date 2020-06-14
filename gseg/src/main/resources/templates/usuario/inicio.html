@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/baseLayout}">
+
+<head>
+<meta charset="UTF-8">
+<title>Herramientas administrador</title>
+</head>
+
+<body>
+
+	<div layout:fragment="contentpage">
+	
+		<div class="jumbotron">
+		  <h1 class="display-4" th:text="#{literal.bienvenido} + ' ' + ${nombreUsuario}"></h1>		  
+		</div>
+
+ 		<!-- Formulario cliente -->
+        <div class="card margin-bottom-20 padding-bottom-20">
+        	<form method="post" action="#" th:object="${clienteForm}">
+        		<input type="hidden" th:field="*{id}" id="idCliente" />
+                <div class="card-body">
+
+                    <!-- Datos personales -->
+                    <h6>
+                        <span th:text="#{literal.datos.personales}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosPersonales">
+							<i class="fa fa-minus"></i>
+						</button>
+                    </h6>
+                    <hr class="btn-success line-form">
+                    <div class="show margin-bottom-20" id="datosPersonales">
+	                    <div class="form-row">
+	                        <div class="form-group col-md-3">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.nombre}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{nombre}" maxlength="128" readonly>	                            
+	                        </div>
+	                        <div class=" form-group col-md-3">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.ape1}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{ape1}" maxlength="128" readonly>	                            
+	                        </div>
+	                        <div class=" form-group col-md-3">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.ape2}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{ape2}" maxlength="128" readonly>	                            
+	                        </div>
+	                        <div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.genero}"></label>
+	                        	<select class="form-control form-control-sm" th:field="*{genero}" disabled>
+	                        		<option th:each="genero : ${listaGenero}" th:value="${genero.value}" th:text="${genero.text}" />
+	                        	</select>                            
+	                        </div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.tipo.documento}"></label>
+	                        	<select id="documento" class="form-control form-control-sm" th:field="*{tipoDoc}" disabled>	                        		
+	                        		<option th:each="documento : ${listaTipoDocumento}" th:value="${documento.value}" th:text="${documento.text}" />
+	                        	</select>	                        	                            
+	                        </div>
+	                        <div class=" form-group col-md-3">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.identificador}"></label>
+	                            <input type="text" id="identificador" class="form-control form-control-sm persist-input" th:field="*{identificador}" maxlength="9" readonly>	                            
+	                        </div>
+	                        <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.nacimiento}"></label>
+                                <input type="date" class="form-control form-control-sm" th:field="*{fechaNac}" readonly>
+                            </div>
+							<div class="form-group col-md-3">
+								<br>								
+								<div class="custom-control custom-checkbox">
+								  <input type="checkbox" class="custom-control-input" id="defaultChecked2" th:field="*{activo}" th:title="#{literal.activo}" th:checked="*{activo}" disabled>
+								  <label class="custom-control-label col-form-label-sm" for="defaultChecked2" th:text="#{literal.activo}"></label>
+								</div>
+							</div>
+						</div>
+					</div>
+                    <!-- Datos Personales -->
+
+                    <!-- Datos contacto -->
+                    <h6>
+                        <span th:text="#{literal.datos.contacto}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datoscontacto">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </h6>
+                    <hr class="btn-success line-form">
+                    <div class="show margin-bottom-20" id="datoscontacto">
+                        <div class="form-row">
+                        	<div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.tipo.via}"></label>
+	                        	<select class="form-control form-control-sm" th:field="*{tipoVia}" disabled>	                        		
+	                        		<option th:each="via : ${listaVias}" th:value="${via.id}" th:text="${via.nombre}" />
+	                        	</select>                            
+	                        </div>
+                            <div class="form-group col-md-6">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.nombre.via}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{nombreVia}" readonly>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.numero}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{numero}" maxlength="4" readonly>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.planta}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{planta}" maxlength="3" readonly>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.puerta}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{puerta}" maxlength="1" readonly>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.provincia}"></label>
+	                        	<select class="form-control form-control-sm" th:field="*{provincia}" disabled>	                        		
+	                        		<option th:each="provincia : ${listaProvincias}" th:value="${provincia.id}" th:text="${provincia.nombre}" />
+	                        	</select>                            
+	                        </div>
+	                        <div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.municipio}"></label>
+	                        	<select class="form-control form-control-sm" th:field="*{municipio}" th:value="*{municipio}" disabled>	
+	                        		<option th:fragment="listaMunicipios" th:each="municipio : ${listaMunicipios}" th:value="${municipio.id}" th:text="${municipio.nombre}" />
+	                        	</select>                            
+	                        </div>
+	                        <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.codigo.postal}"></label>
+                                <input type="text" id="cp" class="form-control form-control-sm" th:field="*{cp}" maxlength="5" readonly>
+                            </div>
+                        </div>
+                        <div class="form-row">
+							<div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.telefono}"></label>
+                                <input type="text" id="telefono" name="telefono" class="form-control form-control-sm" th:field="*{telefono}" maxlength="9" readonly>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.movil}"></label>
+                                <input type="text" id="movil" class="form-control form-control-sm" th:field="*{movil}" maxlength="9" readonly>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.email}"></label>
+                                <input type="email" class="form-control form-control-sm" th:field="*{email}" maxlength="254" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Datos contacto -->
+	                
+					<!-- Tabla domiciliacion -->		
+						<div class="table-responsive margin-bottom-20">					
+							<table id="tablaDomiciliacion" class="table table-bordered" style="width: 100%">
+								<thead>
+									<tr>
+				    	                <th></th>
+										<th th:text="#{literal.nombre}"></th>
+										<th th:text="#{literal.ape1}"></th>
+										<th th:text="#{literal.ape2}"></th>
+										<th th:text="#{literal.numero}"></th>										
+									</tr>
+								</thead>
+							</table>					
+						</div>				
+			        <!-- Tabla domiciliacion -->
+	                	                                  
+				</div>			 
+            </form>
+            
+        </div>
+        <!-- Formulario cliente -->	
+	
+	
+	</div>
+	
+	   <th:block layout:fragment="script">		
+	    <script type="text/javascript">
+	        $(document).ready(function() {
+	        	var idCliente = document.getElementById("idCliente").value;
+	        	
+	        	// Mascaras para la tabla
+				function cuentaBancariaFormat(cuenta) {					
+					return cuenta.slice(0, 4) + "&#09;"  
+						+ cuenta.slice(4, 8) + "&#09;"
+						+ cuenta.slice(8, 12) + "&#09;"
+						+ cuenta.slice(12, 16) + "&#09;"
+						+ cuenta.slice(16, 20) + "&#09;" + (cuenta).slice(20);					
+				}
+							
+				var table = $('#tablaDomiciliacion').DataTable({
+					ajax: "/listaDomiciliaciones/" + idCliente,
+	                ajaxDataProp: "",	                
+	                language: {
+						"url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+	                },
+					columns: [
+			                { data: "id", visible: false },	                
+			                { data: "nombre" },
+			                { data: "ape1" },
+			                { data: "ape2" },
+			                { 
+			                	data: "numero",
+			                	render: function(data) {
+			                		return cuentaBancariaFormat(data);
+			                	}
+			                }     
+					]
+				});
+				
+	        });	        
+
+	    </script>
+    
+    </th:block>
+
+</body>
+
+</html>

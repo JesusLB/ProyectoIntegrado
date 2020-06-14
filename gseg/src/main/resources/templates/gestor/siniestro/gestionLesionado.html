@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+	<div th:fragment="gestionLesionado">
+
+		<!-- Título lesionado -->
+		<h6>
+			<span th:text="#{literal.lesionados}"></span>
+			<button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosLesionado">
+				<i class="fa fa-minus"></i>
+			</button>
+		</h6>
+		<hr class="btn-success line-form">
+
+		<!-- Si es alta mostramos mensaje -->
+		<div th:if="${siniestroForm.id} == 0" class="alert alert-info" role="alert">
+			<div class="row">
+				<div class="col-md-1">
+					<i class="fas fa-info-circle fa-2x"></i>
+				</div>
+				<div class="col-md-11">
+					<label th:text="#{siniestro.gestion.lesionado.editar}"></label>
+				</div>
+			</div>
+		</div>
+
+		<!-- Si es edición mostramos tabla lesionado -->
+		<div th:if="${siniestroForm.id} != 0" class="show" id="datosLesionado">
+
+			<!-- Tabla lesionado -->
+			<a th:if="!${soloLectura}" class="btn btn-success margin-bottom-20" type="button" th:href="@{'/gseg/siniestro/lesionado/alta/' + ${siniestroForm.id}}" th:text="#{lesionado.gestion.nuevo}"></a>
+			<div class="table-responsive margin-bottom-20">
+				<table id="tablaLesionado" class="table table-bordered display dt-responsive nowrap" style="width: 100%">
+					<thead>
+						<tr>
+			   	            <th></th>
+			   	            <th data-priority="1" th:text="#{literal.identificador}"></th>
+							<th th:text="#{literal.nombre}"></th>
+							<th th:text="#{literal.ape1}"></th>
+							<th th:text="#{literal.ape2}"></th>
+							<th th:text="#{literal.telefono}"></th>
+							<th th:text="#{literal.email}"></th>
+							<th data-priority="2" th:text="#{literal.acciones}"></th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		    <!-- Tabla lesionado -->
+
+		</div>
+
+		<!-- Modal para eliminar lesionado -->
+			<div class="modal fade" id="delete-modal-lesionado" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title"></h4>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<p></p>
+							<button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{literal.no}"></button>
+							<a href="#" class="btn btn-danger" th:text="#{literal.si}"></a>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+	</div>
+
+</body>
+</html>

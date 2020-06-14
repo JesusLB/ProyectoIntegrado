@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/baseLayout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{actjudicial.gestion.titulo}"></title>
+</head>
+
+<body>
+
+    <div layout:fragment="contentpage">
+
+        <!-- Formulario actuación judicial -->
+        <div class="card margin-bottom-20 padding-bottom-20">
+        	<form method="post" action="#" th:action="@{/gseg/siniestro/actuacionjudicial/guardar}" th:object="${actJudicialForm}">
+        	    <input type="hidden" th:field="*{id}" id="idActJudicial" />
+        	    <input type="hidden" th:field="*{siniestro.id}" id="idSiniestro" />
+                <div class="card-header color-white">
+                    <h5 th:if="${actJudicialForm.id} == 0" th:text="#{actjudicial.gestion.alta}"></h5>
+                    <h5 th:if="${actJudicialForm.id} != 0 and ${soloLectura}" th:text="#{actjudicial.gestion.vista}"></h5>
+                    <h5 th:if="${actJudicialForm.id} != 0 and !${soloLectura}" th:text="#{actjudicial.gestion.editar}"></h5>
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Datos actuación judicial -->
+                    <h6>
+                        <span th:text="#{literal.datos.actuacion.judicial}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosActJudicial">
+							<i class="fa fa-minus"></i>
+						</button>
+                    </h6>
+                    <hr class="btn-success line-form">
+                    <div class="show" id="datosActJudicial">
+	                    <div class="form-row">
+							<div class="form-group col-md-9" th:classappend="${#fields.hasErrors('nombre')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.nombre}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{nombre}" maxlength="128">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+	                        </div>
+	                        <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.fecha}"></label>
+                                <input type="date" class="form-control form-control-sm" th:field="*{fecha}">
+                            </div>
+						</div>
+						<div class="form-row">
+							<div class=" form-group col-md-12">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.descripcion}"></label>
+    							<textarea id="textArea" class="form-control form-control-sm persist-input" th:field="*{descripcion}" maxlength="500" rows="3"></textarea>
+	                        </div>
+						</div>
+					</div>
+                    <!-- Datos actuación judicial -->
+
+	                <!-- Botones -->
+	                <div class="card-footer color-white">
+		                <div class="form-row float-right">
+		                    <a class="btn btn-success margin-right-20" th:href="@{'/gseg/siniestro/editar/' + *{siniestro.id}}" th:text="!${soloLectura} ? #{literal.cancelar} : #{literal.volver}"></a>
+		                	<button th:if="!${soloLectura}" class="btn btn-success" type="submit" th:text="#{literal.guardar}"></button>
+		                </div>
+	                </div>
+	                <!-- Botones -->
+				</div>
+            </form>
+
+        </div>
+        <!-- Formulario peritacion -->
+
+    </div>
+
+    <th:block layout:fragment="script">
+	    <script type="text/javascript">
+	        $(document).ready(function() {
+	        	var soloLectura = [[${soloLectura}]];
+
+	        	// Cambia los atributos a solo lectura en caso de estar en la vista
+	        	if (soloLectura) {
+	        		var input = document.getElementsByTagName("input");
+	        		for ( var i = 0; i < input.length; i++) {
+	        			input[i].setAttribute("readonly","true");
+	        		}
+	        		var select = document.getElementsByTagName("select");
+	        		for ( var i = 0; i < select.length; i++) {
+	        			select[i].setAttribute("disabled","true");
+	        		}
+	        		document.getElementById("textArea").disabled = true;
+	        	}
+
+	        });
+
+	    </script>
+
+    </th:block>
+
+</body>
+
+</html>

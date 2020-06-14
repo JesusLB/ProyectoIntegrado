@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/baseLayout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{contrario.gestion.titulo}"></title>
+</head>
+
+<body>
+
+    <div layout:fragment="contentpage">
+
+        <!-- Formulario contrario -->
+        <div class="card margin-bottom-20 padding-bottom-20">
+        	<form method="post" action="#" th:action="@{/gseg/siniestro/contrario/guardar}" th:object="${contrarioForm}">
+        	    <input type="hidden" th:field="*{id}" id="idContrario" />
+        	    <input type="hidden" th:field="*{siniestro.id}" id="idSiniestro" />
+                <div class="card-header color-white">
+                    <h5 th:if="${contrarioForm.id} == 0" th:text="#{contrario.gestion.alta}"></h5>
+                    <h5 th:if="${contrarioForm.id} != 0 and ${soloLectura}" th:text="#{contrario.gestion.vista}"></h5>
+                    <h5 th:if="${contrarioForm.id} != 0 and !${soloLectura}" th:text="#{contrario.gestion.editar}"></h5>
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Datos personales -->
+                    <h6>
+                        <span th:text="#{literal.datos.personales}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosContrario">
+							<i class="fa fa-minus"></i>
+						</button>
+                    </h6>
+                    <hr class="btn-success line-form">
+                    <div class="show" id="datosContrario">
+	                    <div class="form-row">
+							<div class="form-group col-md-3" th:classappend="${#fields.hasErrors('nombre')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.nombre}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{nombre}" maxlength="128">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+	                        </div>
+	                        <div class=" form-group col-md-3" th:classappend="${#fields.hasErrors('ape1')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.ape1}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{ape1}" maxlength="128">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('ape1')}" th:errors="*{ape1}"></span>
+	                        </div>
+	                        <div class=" form-group col-md-3">
+	                            <label class="col-form-label col-form-label-sm" th:text="#{literal.ape2}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{ape2}" maxlength="128">
+	                        </div>
+	                        <div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.genero}"></label>
+	                        	<select class="form-control form-control-sm" th:field="*{genero}">
+	                        		<option th:value="0" th:text="#{literal.seleccione}">
+	                        		<option th:each="genero : ${listaGenero}" th:value="${genero.value}" th:text="${genero.text}" />
+	                        	</select>
+	                        </div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.tipo.documento}"></label>
+	                        	<select id="documento" class="form-control form-control-sm" th:field="*{tipoDoc}">
+	                        		<option th:value="0" th:text="#{literal.seleccione}">
+	                        		<option th:each="documento : ${listaTipoDocumento}" th:value="${documento.value}" th:text="${documento.text}" />
+	                        	</select>
+	                        </div>
+	                        <div class=" form-group col-md-3" th:classappend="${#fields.hasErrors('identificador')} ? 'has-error'">
+	                            <label class="col-form-label col-form-label-sm" th:text="#{literal.identificador}"></label>
+	                            <input type="text" id="identificador" class="form-control form-control-sm persist-input" th:field="*{identificador}" maxlength="9" style="text-transform:uppercase;">
+	                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('identificador')}" th:errors="*{identificador}"></span>
+	                        </div>
+	                        <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.nacimiento}"></label>
+                                <input type="date" class="form-control form-control-sm" th:field="*{fechaNac}">
+                            </div>
+						</div>
+						<div class="form-row">
+						</div>
+					</div>
+                    <!-- Datos personales -->
+
+                    <!-- Datos contacto -->
+                    <h6>
+                        <span th:text="#{literal.datos.contacto}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datoscontacto">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </h6>
+                    <hr class="btn-success line-form">
+                    <div class="show margin-bottom-20" id="datoscontacto">
+                        <div class="form-row">
+                        	<div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.tipo.via}"></label>
+	                        	<select class="form-control form-control-sm" th:field="*{tipoVia}">
+	                        		<option th:value="-1" th:text="#{literal.seleccione}">
+	                        		<option th:each="via : ${listaVias}" th:value="${via.id}" th:text="${via.nombre}" />
+	                        	</select>
+	                        </div>
+                            <div class="form-group col-md-6">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.nombre.via}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{nombreVia}"  maxlength="128">
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.numero}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{numero}" maxlength="4">
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.planta}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{planta}" maxlength="3">
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.puerta}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{puerta}" maxlength="1" style="text-transform:uppercase;">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.provincia}"></label>
+	                        	<select class="form-control form-control-sm" th:field="*{provincia}">
+	                        		<option th:value="-1" th:text="#{literal.seleccione}" />
+	                        		<option th:each="provincia : ${listaProvincias}" th:value="${provincia.id}" th:text="${provincia.nombre}" />
+	                        	</select>
+	                        </div>
+	                        <div class="form-group col-md-3">
+	                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.municipio}"></label>
+	                        	<select class="form-control form-control-sm" th:field="*{municipio}" th:value="*{municipio}">
+	                        		<option th:fragment="listaMunicipios" th:each="municipio : ${listaMunicipios}" th:value="${municipio.id}" th:text="${municipio.nombre}" />
+	                        	</select>
+	                        </div>
+	                        <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.codigo.postal}"></label>
+                                <input type="text" id="cp" class="form-control form-control-sm" th:field="*{cp}" maxlength="5">
+                            </div>
+                        </div>
+                        <div class="form-row">
+							<div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.telefono}"></label>
+                                <input type="text" id="telefono" name="telefono" class="form-control form-control-sm" th:field="*{telefono}" maxlength="11">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.movil}"></label>
+                                <input type="text" id="movil" class="form-control form-control-sm" th:field="*{movil}" maxlength="11">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.email}"></label>
+                                <input type="email" class="form-control form-control-sm" th:field="*{email}" maxlength="254">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Datos contacto -->
+
+                    <!-- Datos riesgo asegurado -->
+                    <h6>
+                        <span th:text="#{literal.datos.riesgo}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosRiesgoAsegurado">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </h6>
+                    <hr class="btn-success line-form">
+                    <div class="show margin-bottom-20" id="datosRiesgoAsegurado">
+                        <div class="form-row">
+	                        <div class=" form-group col-md-6">
+	                            <label class="col-form-label col-form-label-sm" th:text="#{literal.riesgo}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{riesgo}" maxlength="128">
+	                        </div>
+	                        <div class=" form-group col-md-3">
+	                            <label class="col-form-label col-form-label-sm" th:text="#{literal.poliza}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{poliza}" maxlength="128">
+	                        </div>
+	                        <div class=" form-group col-md-3">
+	                            <label class="col-form-label col-form-label-sm" th:text="#{literal.cia}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{cia}" maxlength="128">
+	                        </div>
+                        </div>
+                    </div>
+                    <!-- Datos riesgo asegurado -->
+
+	                <!-- Botones -->
+	                <div class="card-footer color-white">
+		                <div class="form-row float-right">
+		                    <a class="btn btn-success margin-right-20" th:href="@{'/gseg/siniestro/editar/' + *{siniestro.id}}" th:text="!${soloLectura} ? #{literal.cancelar} : #{literal.volver}"></a>
+		                	<button th:if="!${soloLectura}" class="btn btn-success" type="submit" th:text="#{literal.guardar}"></button>
+		                </div>
+	                </div>
+	                <!-- Botones -->
+				</div>
+            </form>
+
+        </div>
+        <!-- Formulario contrario -->
+
+    </div>
+
+    <th:block layout:fragment="script">
+	    <script type="text/javascript">
+	        $(document).ready(function() {
+
+	        	var soloLectura = [[${soloLectura}]];
+	        	var idContrario = document.getElementById("idContrario").value;
+
+	        	/*Carga la lista de municipios dependiendo de la provincia elegida*/
+	        	$(function() {
+	        		if(idContrario === 0){
+	        			$("#municipio").load('/gseg/siniestro/municipios', $("#provincia").serialize());
+	        		}
+	        		$('#provincia').on('change', function() {
+	        			$("#municipio").load('/gseg/siniestro/municipios', $("#provincia").serialize());
+	        		});
+	        	});
+
+	        	// Mascaras para el formulario
+	        	$('#telefono').mask("999 999 999");
+	        	$('#movil').mask("999 999 999");
+	        	$('#cp').mask("99999");
+	        	$('#numero').mask("9999");
+	        	$('#planta').mask("999");
+	        	$('#puerta').mask("A");
+	        	$('#documento').change(function(){
+	        		$("#identificador").unmask("")
+	        		if ($('#documento option:selected').val() === 'N') {
+	        			$('#identificador').mask("99999999A");
+	        		} else if ($('#documento option:selected').val() === 'C') {
+	        			$('#identificador').mask("A9999999A");
+	        		} else if ($('#documento option:selected').val() === 'I') {
+	        			$('#identificador').mask("A9999999A");
+	        		}
+	        	});
+
+	        	// Cambia los atributos a solo lectura en caso de estar en la vista
+	        	if (soloLectura) {
+	        		var input = document.getElementsByTagName("input");
+	        		for ( var i = 0; i < input.length; i++) {
+	        			input[i].setAttribute("readonly","true");
+	        		}
+	        		var select = document.getElementsByTagName("select");
+	        		for ( var i = 0; i < select.length; i++) {
+	        			select[i].setAttribute("disabled","true");
+	        		}
+	        		document.getElementById("defaultChecked2").disabled = true;
+	        		document.getElementById("textArea").disabled = true;
+	        	}
+
+	        });
+	    </script>
+
+    </th:block>
+
+</body>
+
+</html>

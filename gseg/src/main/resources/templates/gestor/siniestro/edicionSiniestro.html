@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/baseLayout}">
+
+<head>
+<meta charset="UTF-8">
+<title th:text="#{siniestro.gestion.titulo}"></title>
+</head>
+
+<body>
+
+	<div layout:fragment="contentpage">
+
+	    <!-- Mensaje contrario guardado correctamente -->
+		<div th:if="${contrarioGuardado}" class="alert alert-success alert-dismissible fade show" role="alert">
+			<span th:text="#{contrario.gestion.guardado}"></span>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+
+        <!-- Mensaje contrario eliminado correctamente -->
+		<div th:if="${contrarioEliminado}" class="alert alert-success alert-dismissible fade show" role="alert">
+			<span th:text="#{contrario.gestion.eliminado}"></span>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+
+		<!-- Mensaje lesionado guardado correctamente -->
+		<div th:if="${lesionadoGuardado}" class="alert alert-success alert-dismissible fade show" role="alert">
+			<span th:text="#{lesionado.gestion.guardado}"></span>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+
+        <!-- Mensaje lesionado eliminado correctamente -->
+		<div th:if="${lesionadoEliminado}" class="alert alert-success alert-dismissible fade show" role="alert">
+			<span th:text="#{lesionado.gestion.eliminado}"></span>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+
+    	<!-- Mensaje peritación guardada correctamente -->
+		<div th:if="${peritacionGuardada}" class="alert alert-success alert-dismissible fade show" role="alert">
+			<span th:text="#{peritacion.gestion.guardado}"></span>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+
+        <!-- Mensaje peritación eliminada correctamente -->
+		<div th:if="${peritacionEliminada}" class="alert alert-success alert-dismissible fade show" role="alert">
+			<span th:text="#{peritacion.gestion.eliminado}"></span>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+
+		<div class="card margin-bottom-20 padding-bottom-20">
+			<div class="card-header color-white">
+				<h5 th:if="${siniestroForm.id} == 0" th:text="#{siniestro.gestion.alta}"></h5>
+				<h5 th:if="${siniestroForm.id} != 0 and ${soloLectura}" th:text="#{siniestro.gestion.vista}"></h5>
+				<h5 th:if="${siniestroForm.id} != 0 and !${soloLectura}" th:text="#{siniestro.gestion.editar}"></h5>
+			</div>
+
+			<div class="card-body">
+
+				<!-- Formulario busqueda poliza -->
+				<form method="post" action="#" th:action="@{/gseg/siniestro/poliza}" th:object="${siniestroForm}">
+					<div class="form-row">
+						<div class="form-group col-md-3" th:classappend="${#fields.hasErrors('poliza.numPoliza')} ? 'has-error'">
+							<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.numero.poliza}"></label>
+							<input type="text" id="numPoliza" class="form-control form-control-sm persist-input" th:field="*{poliza.numPoliza}">
+							<span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('poliza.numPoliza')}" th:errors="*{poliza.numPoliza}"></span>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<br>
+								<button th:if="!${soloLectura}" type="submit" class="btn btn-success" th:text="#{literal.buscar.poliza}"></button>
+							</div>
+						</div>
+					</div>
+				</form>
+				<!-- Formulario busqueda poliza -->
+
+				<!-- Formulario siniestro -->
+				<form method="post" action="#" th:action="@{/gseg/siniestro/guardar}" th:object="${siniestroForm}">
+					<input type="hidden" th:field="*{id}" id="idSiniestro" />
+					<input type="hidden" th:field="*{poliza.id}" id="idPoliza" />
+					<input type="hidden" th:field="*{cliente.id}" id="idCliente" />
+
+					<!-- Datos poliza -->
+					<h6>
+						<span th:text="#{literal.datos.poliza}"></span>
+						<button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosPoliza">
+							<i class="fa fa-minus"></i>
+						</button>
+					</h6>
+					<hr class="btn-success line-form">
+					<div class="show margin-bottom-20" id="datosPoliza">
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.nombre}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{poliza.cliente.nombre}" readonly>
+							</div>
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.ape1}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{poliza.cliente.ape1}" readonly>
+							</div>
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.ape2}"></label>
+	                            <input type="text" class="form-control form-control-sm persist-input" th:field="*{poliza.cliente.ape2}" readonly>
+							</div>
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.nacimiento}"></label>
+	                            <input type="date" class="form-control form-control-sm persist-input" th:field="*{poliza.cliente.fechaNac}" readonly>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.efecto}"></label>
+	                            <input type="date" class="form-control form-control-sm persist-input" th:field="*{poliza.fechaEfecto}" readonly>
+							</div>
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.renov}"></label>
+	                            <input type="date" class="form-control form-control-sm persist-input" th:field="*{poliza.fechaRenov}" readonly>
+							</div>
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.vto}"></label>
+	                            <input type="date" class="form-control form-control-sm persist-input" th:field="*{poliza.fechaVto}" readonly>
+							</div>
+							<div class="form-group col-md-3">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.anulacion}"></label>
+	                        	<input type="date" class="form-control form-control-sm persist-input" th:field="*{poliza.fechaAnulacion}" readonly>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-3">
+		                       	<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.forma.pago}"></label>
+		                       	<select id="documento" class="form-control form-control-sm" th:field="*{poliza.formaPago}" disabled>
+		                       		<option th:value="-1" th:text="#{literal.seleccione}">		                        		
+		                       		<option th:each="pago : ${listaTipoPago}" th:value="${pago.value}" th:text="${pago.text}" />
+		                       	</select>		                        	                            
+		                    </div>
+							<div class="form-group col-md-6">
+								<label class="col-form-label col-form-label-sm" th:text="#{literal.riesgo}"></label>
+                                <input type="text" class="form-control form-control-sm" th:field="*{poliza.riesgo}" readonly>
+							</div>
+						</div>
+					</div>
+					<!-- Datos poliza -->
+
+					<!-- Datos siniestro -->
+					<h6>
+						<span th:text="#{literal.datos.siniestro}"></span>
+						<button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datosSiniestro">
+							<i class="fa fa-minus"></i>
+						</button>
+					</h6>
+					<hr class="btn-success line-form">
+
+					<!-- Si es alta mostramos mensaje -->
+					<div th:if="*{poliza.id} == 0" class="alert alert-info" role="alert">
+						<div class="row">
+							<div class="col-md-1">
+								<i class="fas fa-info-circle fa-2x"></i>
+							</div>
+							<div class="col-md-11">
+								<label th:text="#{siniestro.gestion.formulario}"></label>
+							</div>
+						</div>
+					</div>
+
+					<!-- Si se ha buscado a poliza mostramos formulario -->
+					<div th:if="*{poliza.id} != 0">
+						<div class="show margin-bottom-20" id="datosSiniestro">
+		                    <div class="form-row">
+		                        <div class="form-group col-md-3" th:classappend="${#fields.hasErrors('fechaStro')} ? 'has-error'">
+		                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.fecha.stro}"></label>
+		                            <input type="date" class="form-control form-control-sm persist-input" th:field="*{fechaStro}">
+		                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('fechaStro')}" th:errors="*{fechaStro}"></span>
+		                        </div>
+		                        <div class="form-group col-md-3" th:classappend="${#fields.hasErrors('fechaComun')} ? 'has-error'">
+		                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.fecha.comunicacion}"></label>
+		                            <input type="date" class="form-control form-control-sm persist-input" th:field="*{fechaComun}">
+		                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('fechaComun')}" th:errors="*{fechaComun}"></span>
+		                        </div>
+		                        <div class="form-group col-md-3">
+		                            <label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.cierre}"></label>
+		                            <input type="date" class="form-control form-control-sm persist-input" th:field="*{fechaCierre}">
+		                        </div>
+		                        <div class="form-group col-md-3" th:classappend="${#fields.hasErrors('tipo')} ? 'has-error'">
+		                        	<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.tipo.siniestro}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{tipo}">
+		                        		<option th:value="-1" th:text="#{literal.seleccione}">
+		                        		<option th:each="tipo : ${listaTipoSiniestro}" th:value="${tipo.value}" th:text="${tipo.text}" />
+		                        	</select>
+		                        	<span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></span>
+		                        </div>
+							</div>
+							<div class="form-row">
+								<div class="form-group col-md-3" th:classappend="${#fields.hasErrors('estado')} ? 'has-error'">
+		                        	<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.estado.siniestro}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{estado}">
+		                        		<option th:value="-1" th:text="#{literal.seleccione}">
+		                        		<option th:each="estado : ${listaEstado}" th:value="${estado.value}" th:text="${estado.text}" />
+		                        	</select>
+		                        	<span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}"></span>
+		                        </div>
+		                        <div class="form-group col-md-3" th:classappend="${#fields.hasErrors('responsabilidad')} ? 'has-error'">
+		                        	<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.responsabilidad}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{responsabilidad}">
+		                        		<option th:value="-1" th:text="#{literal.seleccione}">
+		                        		<option th:each="responsabilidad : ${listaResponsabilidad}" th:value="${responsabilidad.value}" th:text="${responsabilidad.text}" />
+		                        	</select>
+		                        	<span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('responsabilidad')}" th:errors="*{responsabilidad}"></span>
+		                        </div>
+								<div class="form-group col-md-3">
+									<br>
+									<div class="custom-control custom-checkbox">
+									  <input type="checkbox" class="custom-control-input" id="defaultChecked2" th:field="*{activo}" th:title="#{literal.activo}" th:checked="*{activo}">
+									  <label class="custom-control-label col-form-label-sm" for="defaultChecked2" th:text="#{literal.activo}"></label>
+									</div>
+								</div>
+							</div>
+							<div class="form-row">
+								<div class=" form-group col-md-12">
+									<label class="col-form-label col-form-label-sm" th:text="#{literal.version}"></label>
+	    							<textarea id="textArea" class="form-control form-control-sm persist-input" th:field="*{version}" maxlength="500" rows="3"></textarea>
+		                        </div>
+							</div>
+	 						<div class="form-row">
+	                        	<div class="form-group col-md-3">
+		                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.tipo.via}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{tipoVia}">
+		                        		<option th:value="-1" th:text="#{literal.seleccione}">
+		                        		<option th:each="via : ${listaVias}" th:value="${via.id}" th:text="${via.nombre}" />
+		                        	</select>
+		                        </div>
+	                            <div class="form-group col-md-6">
+	                                <label class="col-form-label col-form-label-sm" th:text="#{literal.nombre.via}"></label>
+	                                <input type="text" class="form-control form-control-sm" th:field="*{nombreVia}" maxlength="128">
+	                            </div>
+	                            <div class="form-group col-md-1">
+	                                <label class="col-form-label col-form-label-sm" th:text="#{literal.numero}"></label>
+	                                <input type="text" class="form-control form-control-sm" th:field="*{numero}" maxlength="4">
+	                            </div>
+	                            <div class="form-group col-md-1">
+	                                <label class="col-form-label col-form-label-sm" th:text="#{literal.planta}"></label>
+	                                <input type="text" class="form-control form-control-sm" th:field="*{planta}" maxlength="3">
+	                            </div>
+	                            <div class="form-group col-md-1">
+	                                <label class="col-form-label col-form-label-sm" th:text="#{literal.puerta}"></label>
+	                                <input type="text" class="form-control form-control-sm" th:field="*{puerta}" maxlength="1" style="text-transform:uppercase;">
+	                            </div>
+	                        </div>
+	                        <div class="form-row">
+	                            <div class="form-group col-md-3">
+		                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.provincia}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{provincia}">
+		                        		<option th:value="-1" th:text="#{literal.seleccione}" />
+		                        		<option th:each="provincia : ${listaProvincias}" th:value="${provincia.id}" th:text="${provincia.nombre}" />
+		                        	</select>
+		                        </div>
+		                        <div class="form-group col-md-3">
+		                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.municipio}"></label>
+		                        	<select class="form-control form-control-sm" th:field="*{municipio}" th:value="*{municipio}">
+		                        		<option th:fragment="listaMunicipios" th:each="municipio : ${listaMunicipios}" th:value="${municipio.id}" th:text="${municipio.nombre}" />
+		                        	</select>
+		                        </div>
+		                        <div class="form-group col-md-3">
+	                                <label class="col-form-label col-form-label-sm" th:text="#{literal.codigo.postal}"></label>
+	                                <input type="text" id="cp" class="form-control form-control-sm" th:field="*{cp}" maxlength="5">
+	                            </div>
+							</div>
+							<div class="form-row">
+								<div class="form-group col-md-3">
+		                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.referencia.cia}"></label>
+									<input type="text" class="form-control form-control-sm" th:field="*{referenciaCia}" maxlength="128">
+		                        </div>
+			                	<div class="form-group col-md-3">
+		                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.danios}"></label>
+									<input type="text" class="form-control form-control-sm" th:field="*{danios}" maxlength="128">
+		                        </div>
+		                        <div class="form-group col-md-3">
+		                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.atestado}"></label>
+									<input type="text" class="form-control form-control-sm" th:field="*{atestado}" maxlength="128">
+		                        </div>
+							</div>
+							<div class="form-row">
+								<div class="form-group col-md-3">
+		                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.prevision}"></label>
+									<input type="text" class="form-control form-control-sm" id="prevision" th:field="*{prevision}" maxlength="10">
+		                        </div>
+		                        <div class="form-group col-md-3">
+		                        	<label class="col-form-label col-form-label-sm" th:text="#{literal.valoracion}"></label>
+									<input type="text" class="form-control form-control-sm" id="valoracion" th:field="*{valoracion}" maxlength="10">
+		                        </div>
+							</div>
+						</div>
+					</div>
+					<!-- Datos siniestro -->
+
+					<!-- Listado de contrarios -->
+	                <div th:insert="gestor/siniestro/gestionContrario::gestionContrario"></div>
+
+	                <!-- Listado de lesionados -->
+	                <div th:insert="gestor/siniestro/gestionLesionado::gestionLesionado"></div>
+
+	                <!-- Listado de peritaciones -->
+	                <div th:insert="gestor/siniestro/gestionPeritacion::gestionPeritacion"></div>
+
+	                <!-- Listado de aciontaciones judiciales -->
+	                <div th:insert="gestor/siniestro/gestionActJudicial::gestionActJudicial"></div>
+
+					<!-- Botones -->
+					<div class="card-footer color-white">
+						<div class="form-row float-right">
+							<a class="btn btn-success margin-right-20" th:href="@{/gseg/siniestro/gestion}" th:text="!${soloLectura} ? #{literal.cancelar} : #{literal.volver}"></a>
+							<button th:if="!${soloLectura}" class="btn btn-success" type="submit" th:text="#{literal.guardar}"></button>
+						</div>
+					</div>
+					<!-- Botones -->
+
+				</form>
+				<!-- Formulario siniestro -->
+
+			</div>
+
+		</div>
+
+	</div>
+
+	<th:block layout:fragment="script">
+		<script type="text/javascript">
+	        $(document).ready(function() {
+
+	        	var soloLectura = [[${soloLectura}]];
+	        	var idSiniestro = document.getElementById("idSiniestro").value;
+	        	var idPoliza = document.getElementById("idPoliza").value;
+
+	        	// Cambia los atributos a solo lectura en caso de estar en la vista
+	        	if (soloLectura) {
+	        		var input = document.getElementsByTagName("input");
+	        		for ( var i = 0; i < input.length; i++) {
+	        			input[i].setAttribute("readonly","true");
+	        		}
+	        		var select = document.getElementsByTagName("select");
+	        		for ( var i = 0; i < select.length; i++) {
+	        			select[i].setAttribute("disabled","true");
+	        		}
+	        		document.getElementById("defaultChecked2").disabled = true;
+	        		document.getElementById("textArea").disabled = true;
+	        	}
+
+	        	/*Carga la lista de municipios dependiendo de la provincia elegida*/
+	        	$(function() {
+	        		if(idSiniestro === 0){
+	        			$("#municipio").load('/gseg/siniestro/municipios', $("#provincia").serialize());
+	        		}
+	        		$('#provincia').on('change', function() {
+	        			$("#municipio").load('/gseg/siniestro/municipios', $("#provincia").serialize());
+	        		});
+	        	});
+
+	        	if(idSiniestro == 0 && idPoliza != 0){
+		        	// máscara para el formulario
+		        	const autoNumericOptionsEuro = {
+					    digitGroupSeparator			: '.',
+					    decimalCharacter			: ',',
+					    decimalCharacterAlternative	: '.',
+					    maximumValue				: '99999',
+					    currencySymbol				: ' €',
+					    currencySymbolPlacement		: AutoNumeric.options.currencySymbolPlacement.suffix,
+					    roundingMethod				: AutoNumeric.options.roundingMethod.halfUpSymmetric,
+					};					
+					new AutoNumeric('#valoracion', autoNumericOptionsEuro );	
+					new AutoNumeric('#prevision', autoNumericOptionsEuro );					
+	        	}
+
+				//Modal para eliminar un contrario
+				$('#delete-modal-contrario').on('show.bs.modal', function(event) {
+					var button = $(event.relatedTarget);
+					var data = button.data('id');
+
+					var modal = $(this);
+
+					var a = modal.find('.modal-body a')[0];
+					modal.find('.modal-header h4').text('Eliminar contrario');
+					modal.find('.modal-body p').text('¿Está usted seguro de eliminar este contrario?');
+					a.href = '/gseg/siniestro/contrario/eliminar/' + data;
+				});
+
+				//Modal para eliminar un lesionado
+				$('#delete-modal-lesionado').on('show.bs.modal', function(event) {
+					var button = $(event.relatedTarget);
+					var data = button.data('id');
+
+					var modal = $(this);
+
+					var a = modal.find('.modal-body a')[0];
+					modal.find('.modal-header h4').text('Eliminar lesionado');
+					modal.find('.modal-body p').text('¿Está usted seguro de eliminar este lesionado?');
+					a.href = '/gseg/siniestro/lesionado/eliminar/' + data;
+				});
+
+				//Modal para eliminar una peritación
+				$('#delete-modal-peritacion').on('show.bs.modal', function(event) {
+					var button = $(event.relatedTarget);
+					var data = button.data('id');
+
+					var modal = $(this);
+
+					var a = modal.find('.modal-body a')[0];
+					modal.find('.modal-header h4').text('Eliminar peritación');
+					modal.find('.modal-body p').text('¿Está usted seguro de eliminar esta peritación?');
+					a.href = '/gseg/siniestro/peritacion/eliminar/' + data;
+				});
+
+				//Modal para eliminar una actuación judicial
+				$('#delete-modal-actuacionjudicial').on('show.bs.modal', function(event) {
+					var button = $(event.relatedTarget);
+					var data = button.data('id');
+
+					var modal = $(this);
+
+					var a = modal.find('.modal-body a')[0];
+					modal.find('.modal-header h4').text('Eliminar actuación judicial');
+					modal.find('.modal-body p').text('¿Está usted seguro de eliminar esta actuación judicial?');
+					a.href = '/gseg/siniestro/actuacionjudicial/eliminar/' + data;
+				});
+
+	        	var table = $('#tablaContrario').DataTable({
+                    ajax: "/listaContrarios/" + idSiniestro,
+                    ajaxDataProp: "",
+                    language: {
+                        "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+                    },
+                    columns: [
+                    	{ data: "id", visible: false },
+                    	{ data: "nombre" },
+                    	{ data: "ape1" },
+                    	{ data: "ape2" },
+                    	{ data: "riesgo" },
+                    	{ data: "poliza" },
+                    	{ data: "cia" },
+                    	{
+                        	data: null,
+                        	orderable: false,
+                        	searchable: false,
+                        	render: function(data, type, row, meta) {
+                        		var idContrario = row['id'];
+                            	var enlaces = '';
+                            	var enlaceVer = `<a class="text-success margin-right-10" title="[[#{literal.ver}]]" href="[[@{/gseg/siniestro/contrario/ver/${idContrario}}]]"><i class="fas fa-eye fa-sm"></i></a>`;
+                            	var enlaceEditar = `<a class="text-success margin-right-10" title="[[#{literal.editar}]]" href="[[@{/gseg/siniestro/contrario/editar/${idContrario}}]]"><i class="fas fa-edit fa-sm"></i></a>`;
+                            	var enlaceEliminar = `<a class="text-success" href="#" title="[[#{literal.eliminar}]]" data-toggle="modal" data-target="#delete-modal-contrario" data-id="${idContrario}"><i class="fas fa-trash-alt fa-sm"></i></a>`;
+
+                            	return enlaceVer + enlaceEditar + enlaceEliminar;
+                        	}
+                    }]
+
+                });
+
+	        	var table = $('#tablaLesionado').DataTable({
+                    ajax: "/listaLesionados/" + idSiniestro,
+                    ajaxDataProp: "",
+                    language: {
+                        "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+                    },
+                    columns: [
+                    	{ data: "id", visible: false },
+                    	{ data: "identificador" },
+                    	{ data: "nombre" },
+                    	{ data: "ape1" },
+                    	{ data: "ape2" },
+                    	{ data: "telefono" },
+                    	{ data: "email" },
+                    	{
+                        	data: null,
+                        	orderable: false,
+                        	searchable: false,
+                        	render: function(data, type, row, meta) {
+                        		var idLesionado = row['id'];
+                            	var enlaces = '';
+                            	var enlaceVer = `<a class="text-success margin-right-10" title="[[#{literal.ver}]]" href="[[@{/gseg/siniestro/lesionado/ver/${idLesionado}}]]"><i class="fas fa-eye fa-sm"></i></a>`;
+                            	var enlaceEditar = `<a class="text-success margin-right-10" title="[[#{literal.editar}]]" href="[[@{/gseg/siniestro/lesionado/editar/${idLesionado}}]]"><i class="fas fa-edit fa-sm"></i></a>`;
+                            	var enlaceEliminar = `<a class="text-success" href="#" title="[[#{literal.eliminar}]]" data-toggle="modal" data-target="#delete-modal-lesionado" data-id="${idLesionado}"><i class="fas fa-trash-alt fa-sm"></i></a>`;
+
+                            	return enlaceVer + enlaceEditar + enlaceEliminar;
+                        	}
+                    }]
+
+                });
+
+	        	var table = $('#tablaPeritacion').DataTable({
+                    ajax: "/listaPeritaciones/" + idSiniestro,
+                    ajaxDataProp: "",
+                    language: {
+                        "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+                    },
+                    columns: [
+                    	{ data: "id", visible: false },
+                    	{ data: "fecha" },
+                    	{ data: "descripcion" },
+                    	{ 
+                    		data: "perito",
+                    		render: function(data, type, row, meta){
+                    			if(data == null){
+                    				return "";
+                    			} else {
+                    				return data.nombre + ' ' + data.ape1 + ' ' + data.ape2;
+                    			}
+                    		}
+                    	},
+                    	{ 
+                    		data: "taller",
+                    		render: function(data, type, row, meta){
+                    			if(data == null){
+                    				return "";
+                    			} else {
+                    				return data.nombre;
+                    			}
+                    		}
+                    	},
+                    	{
+                        	data: null,
+                        	orderable: false,
+                        	searchable: false,
+                        	render: function(data, type, row, meta) {
+                        		var idPeritacion = row['id'];
+                            	var enlaces = '';
+                            	var enlaceVer = `<a class="text-success margin-right-10" title="[[#{literal.ver}]]" href="[[@{/gseg/siniestro/peritacion/ver/${idPeritacion}}]]"><i class="fas fa-eye fa-sm"></i></a>`;
+                            	var enlaceEditar = `<a class="text-success margin-right-10" title="[[#{literal.editar}]]" href="[[@{/gseg/siniestro/peritacion/editar/${idPeritacion}}]]"><i class="fas fa-edit fa-sm"></i></a>`;
+                            	var enlaceEliminar = `<a class="text-success" href="#" title="[[#{literal.eliminar}]]" data-toggle="modal" data-target="#delete-modal-peritacion" data-id="${idPeritacion}"><i class="fas fa-trash-alt fa-sm"></i></a>`;
+
+                            	return enlaceVer + enlaceEditar + enlaceEliminar;
+                        	}
+                    }]
+
+                });
+
+	        	var table = $('#tablaActJudicial').DataTable({
+                    ajax: "/listaActJudiciales/" + idSiniestro,
+                    ajaxDataProp: "",
+                    language: {
+                        "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+                    },
+                    columns: [
+                    	{ data: "id", visible: false },
+                    	{ data: "nombre" },
+                    	{ data: "fecha" },
+                    	{ data: "descripcion" },
+                    	{
+                        	data: null,
+                        	orderable: false,
+                        	searchable: false,
+                        	render: function(data, type, row, meta) {
+                        		var idActJudicial = row['id'];
+                            	var enlaces = '';
+                            	var enlaceVer = `<a class="text-success margin-right-10" title="[[#{literal.ver}]]" href="[[@{/gseg/siniestro/actuacionjudicial/ver/${idActJudicial}}]]"><i class="fas fa-eye fa-sm"></i></a>`;
+                            	var enlaceEditar = `<a class="text-success margin-right-10" title="[[#{literal.editar}]]" href="[[@{/gseg/siniestro/actuacionjudicial/editar/${idActJudicial}}]]"><i class="fas fa-edit fa-sm"></i></a>`;
+                            	var enlaceEliminar = `<a class="text-success" href="#" title="[[#{literal.eliminar}]]" data-toggle="modal" data-target="#delete-modal-actuacionjudicial" data-id="${idActJudicial}"><i class="fas fa-trash-alt fa-sm"></i></a>`;
+
+                            	return enlaceVer + enlaceEditar + enlaceEliminar;
+                        	}
+                    }]
+
+                });
+
+	        });
+
+	    </script>
+
+	</th:block>
+
+</body>
+
+</html>

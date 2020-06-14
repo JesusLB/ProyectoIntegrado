@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/baseLayout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{usuario.gestion.titulo}"></title>
+</head>
+
+<body>
+
+    <div layout:fragment="contentpage">
+
+        <!-- Formulario Usuario -->
+        <div class="card margin-bottom-20 padding-bottom-20">
+        	<form method="post" action="#" th:action="@{/gseg/usuario/guardar}" th:object="${usuarioForm}">
+        	    <input type="hidden" th:field="*{id}" id="idUsuario" />
+                <div class="card-header color-white">
+                    <h5 th:if="${usuarioForm.id} == 0" th:text="#{usuario.gestion.alta}"></h5>
+                    <h5 th:if="${usuarioForm.id} != 0 and ${soloLectura}" th:text="#{usuario.gestion.vista}"></h5>
+                    <h5 th:if="${usuarioForm.id} != 0 and !${soloLectura}" th:text="#{usuario.gestion.editar}"></h5>
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Identificacion -->
+                    <h6>
+                        <span th:text="#{literal.identificacion}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#identificacion">
+							<i class="fa fa-minus"></i>
+						</button>
+                    </h6>
+                    <hr class="btn-success line-form">
+                    <div class="form-row show margin-bottom-20" id="identificacion">
+                        <div class="form-group col-md-4" th:classappend="${#fields.hasErrors('usuario')} ? 'has-error'">
+                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.usuario}"></label>
+                            <input type="text" class="form-control form-control-sm persist-input"  placeholder="00000000T" th:value="${usuarioForm.usuario}" th:field="*{usuario}" maxlength="9">
+                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('usuario')}" th:errors="*{usuario}"></span>
+                        </div>
+                        <div class=" form-group col-md-4" th:classappend="${#fields.hasErrors('clave')} ? 'has-error'">
+                            <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.clave}"></label>
+                            <input type="text" class="form-control form-control-sm persist-input" th:value="${usuarioForm.clave}" th:field="*{clave}" maxlength="64">
+                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('clave')}" th:errors="*{clave}"></span>
+                        </div>
+                        <div class="form-group col-md-4" th:classappend="${#fields.hasErrors('rol')} ? 'has-error'">
+                        	<label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.rol}"></label>
+                        	<select class="form-control form-control-sm" th:field="*{rol}">
+                        		<option th:value="-1" th:text="#{literal.seleccione}">
+                        		<option th:each="rol : ${listaRoles}" th:value="${rol.id}" th:text="${rol.nombre}" />
+                        	</select>
+                            <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('rol.id')}" th:errors="*{rol.id}"></span>
+                        </div>
+					</div>
+                    <!-- Identificacion -->
+
+                    <!-- Datos personales -->
+                    <h6>
+                        <span th:text="#{literal.datos.personales}"></span>
+                        <button class="btn btn-primary-outline btn-toggle float-right" type="button" data-toggle="collapse" data-target="#datospersonales">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </h6>
+                    <hr class="btn-success line-form">
+                    <div class="show margin-bottom-20" id="datospersonales">
+                        <div class="form-row">
+                            <div class="form-group col-md-4" th:classappend="${#fields.hasErrors('nombre')} ? 'has-error'">
+                                <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.nombre}"></label>
+                                <input type="text" class="form-control form-control-sm persist-input" th:name="nombre" th:value="${usuarioForm.nombre}" maxlength="128">
+                                <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+                            </div>
+                            <div class="form-group col-md-4" th:classappend="${#fields.hasErrors('ape1')} ? 'has-error'">
+                                <label class="col-form-label col-form-label-sm obligatorio" th:text="#{literal.ape1}"></label>
+                                <input type="text" class="form-control form-control-sm persist-input" th:name="ape1" th:value="${usuarioForm.ape1}" maxlength="128">
+                                <span class="col-form-label-sm text-danger" th:if="${#fields.hasErrors('ape1')}" th:errors="*{ape1}"></span>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.ape2}"></label>
+                                <input type="text" class="form-control form-control-sm persist-input" id="ape2" th:name="ape2" th:value="${usuarioForm.ape2}" maxlength="128">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.alta}"></label>
+                                <input type="date" class="form-control form-control-sm" th:field="*{fechaAlta}" readonly>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="col-form-label col-form-label-sm" th:text="#{literal.fecha.baja}"></label>
+                                <input type="date" class="form-control form-control-sm" th:field="*{fechaBaja}" readonly>
+                            </div>
+                            <div class="form-group col-md-3">
+								<br>
+								<div class="custom-control custom-checkbox">
+								  <input type="checkbox" class="custom-control-input" id="defaultChecked2" th:field="*{activo}" th:title="#{literal.activo}" th:checked="*{activo}">
+								  <label class="custom-control-label col-form-label-sm" for="defaultChecked2" th:text="#{literal.activo}"></label>
+								</div>
+							</div>
+                        </div>
+                    </div>
+                    <!-- Datos personales -->
+                </div>
+
+                <div class="card-footer color-white">
+                	<!-- Botones -->
+                    <div class="form-row float-right">
+                        <a class="btn btn-success margin-right-20" th:href="@{/gseg/usuario/gestion}" th:text="!${soloLectura} ? #{literal.cancelar} : #{literal.volver}"></a>
+                        <button th:if="!${soloLectura}" class="btn btn-success" type="submit" th:text="#{literal.guardar}"></button>
+                    </div>
+                    <!-- Botones -->
+                </div>
+			</form>
+
+        </div>
+        <!-- Formulario Usuario -->
+
+    </div>
+    <th:block layout:fragment="script">
+	    <script type="text/javascript">
+	    
+		    $(document).ready(function() {
+		    	var soloLectura = [[${soloLectura}]];
+	
+		    	if (soloLectura) {
+		    		var input = document.getElementsByTagName("input");
+		    	    for ( var i = 0; i < input.length; i++) {
+		    	    	input[i].setAttribute("readonly","true");
+		    	    }
+		    	    var select = document.getElementsByTagName("select");
+		    	    for ( var i = 0; i < select.length; i++) {
+		    	        	select[i].setAttribute("disabled","true");
+		    	    }		
+		    	    document.getElementById("defaultChecked2").disabled = true;
+		    	}
+		    });	    
+	    
+	    </script>    
+    </th:block>
+</body>
+</html>
